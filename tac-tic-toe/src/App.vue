@@ -9,6 +9,8 @@
     </div>  
     </div>    
   </div>
+  <h1 v-if="xturn">X's Turn</h1>
+  <h1 v-if="!xturn">O's Turn</h1>
   <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
   <h2 v-if="tie"> Tie Game </h2>
   <button @click="resetBoard()" v-if="complete || tie">RESET</button>
@@ -77,6 +79,10 @@ export default {
     },
   
   calculateWin(bigIndex) {
+    if (this.board[9][bigIndex] != "")//if this board has already been won escape
+    {
+      return
+    }
     const WIN_CONDITIONS = [
       [0,1,2], [3,4,5], [6,7,8], //rows
       [0,3,6], [1,4,7], [2,5,8],//columns
@@ -88,8 +94,15 @@ export default {
       let third = WIN_CONDITIONS[i][2];
       if(this.board[bigIndex][first]==this.board[bigIndex][second] && this.board[bigIndex][first] == this.board[bigIndex][third] && this.board[bigIndex][first] != "")
       {
-        this.complete = true;
-        this.winner = this.board[bigIndex][first];
+        if (bigIndex == 9)
+        {
+          this.complete = true;
+          this.winner = this.board[bigIndex][first];        
+        }
+        else{
+          this.board[9][bigIndex] = this.board[bigIndex][first];
+          this.calculateWin(9);
+        }
       }
     }
     //console.log(WIN_CONDITIONS);
