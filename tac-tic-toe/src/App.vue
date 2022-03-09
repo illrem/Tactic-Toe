@@ -5,7 +5,7 @@
   <div class="game">
     <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" >    
     <div class="miniBoard">    
-      <div @click="play(index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[0][index-1]}">{{board[index-1]}}</div>
+      <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1]}">{{board[bigIndex-1][index-1]}}</div>
     </div>  
     </div>    
   </div>
@@ -23,7 +23,16 @@ export default {
   },
   data() {
     return {
-      board: ["","","","","","","","",""],
+      board: [["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""]],
       occupied: [[false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
@@ -40,27 +49,27 @@ export default {
     }
   },
   methods: {
-    play(index){
-      if (this.occupied[0][index])
+    play(bigIndex, index){
+      if (this.occupied[bigIndex][index])
       {
         return//add null noise
       }
       socket.emit("play", index);
-      this.draw(index);
+      this.draw(bigIndex, index);
     },
-    draw(index) {
+    draw(bigIndex, index) {
       if(this.xturn) {//if is x's turn mark as x
-        this.board[index]="X"
+        this.board[bigIndex][index]="X"
       } else {//if is o's turn mark as o
-        this.board[index]="O"
+        this.board[bigIndex][index]="O"
       }
-      this.occupied[0][index]=true
+      this.occupied[bigIndex][index]=true
       this.xturn = !this.xturn
-      this.calculateWin();
+      this.calculateWin([bigIndex]);
       this.calculateTie();
     },
   
-  calculateWin() {
+  calculateWin(bigIndex) {
     const WIN_CONDITIONS = [
       [0,1,2], [3,4,5], [6,7,8], //rows
       [0,3,6], [1,4,7], [2,5,8],//columns
@@ -70,17 +79,17 @@ export default {
       let first = WIN_CONDITIONS[i][0];      
       let second = WIN_CONDITIONS[i][1];
       let third = WIN_CONDITIONS[i][2];
-      if(this.board[first]==this.board[second] && this.board[first] == this.board[third] && this.board[first] != "")
+      if(this.board[bigIndex][first]==this.board[bigIndex][second] && this.board[bigIndex][first] == this.board[bigIndex][third] && this.board[bigIndex][first] != "")
       {
         this.complete = true;
-        this.winner = this.board[first];
+        this.winner = this.board[bigIndex][first];
       }
     }
     //console.log(WIN_CONDITIONS);
   },
   resetBoard() {
     for (let i = 0; i <= 8; i++){
-      this.board[i] = "";      
+      this.board[0][i] = "";   ///////////////change to    
     }
     this.complete = false;
     this.winner = "";
@@ -89,7 +98,7 @@ export default {
   },
   calculateTie() {// go back and move this into calc win to improve effcienecy
     for (let i = 0; i <= 8; i++){
-      if (this.board[i] == ""){
+      if (this.board[0][i] == ""){///////////////////change to
         return
       }
     }    
