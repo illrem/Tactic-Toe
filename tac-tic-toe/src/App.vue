@@ -1,38 +1,19 @@
+
 <template>
 <div class="container"> 
   <h1>TacTic Toe</h1>
   <div class="game">
-    <div id="square_0" class="square" >
-    
-    <div class="miniBoard">
-    <div id="square_0" class="miniSquare" v-bind:class="{occupied:occupied[0]}" @click="play(0)">{{board[0]}}</div>
-    <div id="square_1" class="miniSquare" v-bind:class="{occupied:occupied[1]}" @click="play(1)">{{board[1]}}</div>
-    <div id="square_2" class="miniSquare" v-bind:class="{occupied:occupied[2]}" @click="play(2)">{{board[2]}}</div>
-    <div id="square_3" class="miniSquare" v-bind:class="{occupied:occupied[3]}" @click="play(3)">{{board[3]}}</div>
-    <div id="square_4" class="miniSquare" v-bind:class="{occupied:occupied[4]}" @click="play(4)">{{board[4]}}</div>
-    <div id="square_5" class="miniSquare" v-bind:class="{occupied:occupied[5]}" @click="play(5)">{{board[5]}}</div>
-    <div id="square_6" class="miniSquare" v-bind:class="{occupied:occupied[6]}" @click="play(6)">{{board[6]}}</div>
-    <div id="square_7" class="miniSquare" v-bind:class="{occupied:occupied[7]}" @click="play(7)">{{board[7]}}</div>
-    <div id="square_8" class="miniSquare" v-bind:class="{occupied:occupied[8]}" @click="play(8)">{{board[8]}}</div>
-    </div>
-    
-    </div>
-
-    <div id="square_1" class="square"></div>
-    <div id="square_2" class="square"></div>
-    <div id="square_3" class="square"></div>
-    <div id="square_4" class="square"></div>
-    <div id="square_5" class="square"></div>
-    <div id="square_6" class="square"></div>
-    <div id="square_7" class="square"></div>
-    <div id="square_8" class="square"></div>
+    <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" >    
+    <div class="miniBoard">    
+      <div @click="play(index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[0][index-1]}">{{board[index-1]}}</div>
+    </div>  
+    </div>    
   </div>
   <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
   <h2 v-if="tie"> Tie Game </h2>
   <button @click="resetBoard()" v-if="complete || tie">RESET</button>
 </div>
 </template>
-
 <script>
 import io from 'socket.io-client'
 const socket = io("http://localhost:3000")
@@ -43,7 +24,15 @@ export default {
   data() {
     return {
       board: ["","","","","","","","",""],
-      occupied: [false,false,false,false,false,false,false,false,false],
+      occupied: [[false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]],
       xturn: true,
       complete: false,
       winner: null,
@@ -52,7 +41,7 @@ export default {
   },
   methods: {
     play(index){
-      if (this.occupied[index])
+      if (this.occupied[0][index])
       {
         return//add null noise
       }
@@ -65,7 +54,7 @@ export default {
       } else {//if is o's turn mark as o
         this.board[index]="O"
       }
-      this.occupied[index]=true
+      this.occupied[0][index]=true
       this.xturn = !this.xturn
       this.calculateWin();
       this.calculateTie();
@@ -116,7 +105,6 @@ created() {
 
   }
 </script>
-
 <style>
 * {
   margin: 0;
@@ -171,8 +159,8 @@ h2 {
 
 .miniSquare {
   display: flex;  
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
