@@ -2,15 +2,30 @@
 <div class="container"> 
   <h1>TacTic Toe</h1>
   <div class="game">
-    <div id="square_0" class="square" @click="play(0)">{{board[0]}}</div>
-    <div id="square_1" class="square" @click="play(1)">{{board[1]}}</div>
-    <div id="square_2" class="square" @click="play(2)">{{board[2]}}</div>
-    <div id="square_3" class="square" @click="play(3)">{{board[3]}}</div>
-    <div id="square_4" class="square" @click="play(4)">{{board[4]}}</div>
-    <div id="square_5" class="square" @click="play(5)">{{board[5]}}</div>
-    <div id="square_6" class="square" @click="play(6)">{{board[6]}}</div>
-    <div id="square_7" class="square" @click="play(7)">{{board[7]}}</div>
-    <div id="square_8" class="square" @click="play(8)">{{board[8]}}</div>
+    <div id="square_0" class="square" >
+    
+    <div class="miniBoard">
+    <div id="square_0" class="miniSquare" v-bind:class="{occupied:occupied[0]}" @click="play(0)">{{board[0]}}</div>
+    <div id="square_1" class="miniSquare" v-bind:class="{occupied:occupied[1]}" @click="play(1)">{{board[1]}}</div>
+    <div id="square_2" class="miniSquare" v-bind:class="{occupied:occupied[2]}" @click="play(2)">{{board[2]}}</div>
+    <div id="square_3" class="miniSquare" v-bind:class="{occupied:occupied[3]}" @click="play(3)">{{board[3]}}</div>
+    <div id="square_4" class="miniSquare" v-bind:class="{occupied:occupied[4]}" @click="play(4)">{{board[4]}}</div>
+    <div id="square_5" class="miniSquare" v-bind:class="{occupied:occupied[5]}" @click="play(5)">{{board[5]}}</div>
+    <div id="square_6" class="miniSquare" v-bind:class="{occupied:occupied[6]}" @click="play(6)">{{board[6]}}</div>
+    <div id="square_7" class="miniSquare" v-bind:class="{occupied:occupied[7]}" @click="play(7)">{{board[7]}}</div>
+    <div id="square_8" class="miniSquare" v-bind:class="{occupied:occupied[8]}" @click="play(8)">{{board[8]}}</div>
+    </div>
+    
+    </div>
+
+    <div id="square_1" class="square"></div>
+    <div id="square_2" class="square"></div>
+    <div id="square_3" class="square"></div>
+    <div id="square_4" class="square"></div>
+    <div id="square_5" class="square"></div>
+    <div id="square_6" class="square"></div>
+    <div id="square_7" class="square"></div>
+    <div id="square_8" class="square"></div>
   </div>
   <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
   <h2 v-if="tie"> Tie Game </h2>
@@ -28,6 +43,7 @@ export default {
   data() {
     return {
       board: ["","","","","","","","",""],
+      occupied: [false,false,false,false,false,false,false,false,false],
       xturn: true,
       complete: false,
       winner: null,
@@ -36,6 +52,10 @@ export default {
   },
   methods: {
     play(index){
+      if (this.occupied[index])
+      {
+        return//add null noise
+      }
       socket.emit("play", index);
       this.draw(index);
     },
@@ -45,7 +65,7 @@ export default {
       } else {//if is o's turn mark as o
         this.board[index]="O"
       }
-      
+      this.occupied[index]=true
       this.xturn = !this.xturn
       this.calculateWin();
       this.calculateTie();
@@ -131,6 +151,12 @@ h2 {
   height: 300px;
   grid-template-columns: auto auto auto;
 }
+.miniBoard {
+  display: grid;
+  width: 100px;
+  height: 100px;
+  grid-template-columns: auto auto auto;
+}
 
 .square {
   display: flex;
@@ -141,10 +167,21 @@ h2 {
   font-size: 3rem;
   font-weight: bold;
   border: 3px solid black;
+}
+
+.miniSquare {
+  display: flex;  
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 3px solid black;
   transition: background 0.2s ease-in-out;
 }
 
-.square:hover {
+.miniSquare:hover {
   cursor: pointer;
   background: #0ff30f;
 }
