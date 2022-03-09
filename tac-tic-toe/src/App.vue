@@ -79,10 +79,15 @@ export default {
     },
   
   calculateWin(bigIndex) {
-    if (this.board[9][bigIndex] != "")//if this board has already been won escape
+    //console.log(bigIndex);
+    if (bigIndex < 9)
     {
-      return
+      if (this.board[9][bigIndex] != "")//if this board has already been won escape
+      {
+        return
+      }
     }
+    //console.log("allowed");
     const WIN_CONDITIONS = [
       [0,1,2], [3,4,5], [6,7,8], //rows
       [0,3,6], [1,4,7], [2,5,8],//columns
@@ -94,6 +99,7 @@ export default {
       let third = WIN_CONDITIONS[i][2];
       if(this.board[bigIndex][first]==this.board[bigIndex][second] && this.board[bigIndex][first] == this.board[bigIndex][third] && this.board[bigIndex][first] != "")
       {
+        //console.log(bigIndex);
         if (bigIndex == 9)
         {
           this.complete = true;
@@ -101,7 +107,7 @@ export default {
         }
         else{
           this.board[9][bigIndex] = this.board[bigIndex][first];
-          this.calculateWin(9);
+          this.calculateWin("9");          
         }
       }
     }
@@ -131,10 +137,10 @@ export default {
   }  
 },
 created() {
-    socket.on("play", (msg) =>{
+    //socket.on("play", (msg) =>{
       //console.log("Play ", msg)
-      this.draw(msg)
-    })
+    //  this.draw(msg)
+    //})
   }
 
   }
