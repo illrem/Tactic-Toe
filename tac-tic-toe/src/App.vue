@@ -19,7 +19,8 @@
 </template>
 
 <script>
-
+import io from 'socket.io-client'
+const socket = io("http://localhost:3000")
 export default {
   name: 'App',
   components: {
@@ -70,6 +71,7 @@ export default {
     this.complete = false;
     this.winner = "";
     this.tie = false;
+    //console.log("Board Reset")
   },
   calculateTie() {// go back and move this into calc win to improve effcienecy
     for (let i = 0; i <= 8; i++){
@@ -78,9 +80,15 @@ export default {
       }
     }    
       this.tie = true;
+  }  
+},
+created() {
+    socket.on("hello", (msg) =>{
+      console.log("recieved in vue ", msg)
+    })
   }
+
   }
-}
 </script>
 
 <style>
