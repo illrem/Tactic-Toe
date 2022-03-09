@@ -2,15 +2,15 @@
 <div class="container"> 
   <h1>TacTic Toe</h1>
   <div class="game">
-    <div id="square_0" class="square" @click="draw(0)">{{board[0]}}</div>
-    <div id="square_1" class="square" @click="draw(1)">{{board[1]}}</div>
-    <div id="square_2" class="square" @click="draw(2)">{{board[2]}}</div>
-    <div id="square_3" class="square" @click="draw(3)">{{board[3]}}</div>
-    <div id="square_4" class="square" @click="draw(4)">{{board[4]}}</div>
-    <div id="square_5" class="square" @click="draw(5)">{{board[5]}}</div>
-    <div id="square_6" class="square" @click="draw(6)">{{board[6]}}</div>
-    <div id="square_7" class="square" @click="draw(7)">{{board[7]}}</div>
-    <div id="square_8" class="square" @click="draw(8)">{{board[8]}}</div>
+    <div id="square_0" class="square" @click="play(0)">{{board[0]}}</div>
+    <div id="square_1" class="square" @click="play(1)">{{board[1]}}</div>
+    <div id="square_2" class="square" @click="play(2)">{{board[2]}}</div>
+    <div id="square_3" class="square" @click="play(3)">{{board[3]}}</div>
+    <div id="square_4" class="square" @click="play(4)">{{board[4]}}</div>
+    <div id="square_5" class="square" @click="play(5)">{{board[5]}}</div>
+    <div id="square_6" class="square" @click="play(6)">{{board[6]}}</div>
+    <div id="square_7" class="square" @click="play(7)">{{board[7]}}</div>
+    <div id="square_8" class="square" @click="play(8)">{{board[8]}}</div>
   </div>
   <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
   <h2 v-if="tie"> Tie Game </h2>
@@ -35,12 +35,17 @@ export default {
     }
   },
   methods: {
+    play(index){
+      socket.emit("play", index);
+      this.draw(index);
+    },
     draw(index) {
       if(this.xturn) {//if is x's turn mark as x
         this.board[index]="X"
       } else {//if is o's turn mark as o
         this.board[index]="O"
       }
+      
       this.xturn = !this.xturn
       this.calculateWin();
       this.calculateTie();
@@ -83,8 +88,9 @@ export default {
   }  
 },
 created() {
-    socket.on("hello", (msg) =>{
-      console.log("recieved in vue ", msg)
+    socket.on("play", (msg) =>{
+      //console.log("Play ", msg)
+      this.draw(msg)
     })
   }
 
