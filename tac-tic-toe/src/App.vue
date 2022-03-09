@@ -89,8 +89,10 @@ export default {
   },
   resetBoard() {
     for (let i = 0; i <= 8; i++){
-      this.board[0][i] = "";   ///////////////change to    
-    }
+      for (let j = 0; j <= 8; j++){
+        this.board[i][j] = "";
+      }
+    }    
     this.complete = false;
     this.winner = "";
     this.tie = false;
@@ -98,8 +100,10 @@ export default {
   },
   calculateTie() {// go back and move this into calc win to improve effcienecy
     for (let i = 0; i <= 8; i++){
-      if (this.board[0][i] == ""){///////////////////change to
+      for (let j = 0; j <= 8; j++){
+      if (this.board[i][j] == ""){///////////////////change to
         return
+      }
       }
     }    
       this.tie = true;
