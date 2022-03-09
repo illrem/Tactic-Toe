@@ -3,7 +3,7 @@
 <div class="container"> 
   <h1>TacTic Toe</h1>
   <div class="game">
-    <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" >    
+    <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
     <div class="miniBoard">    
       <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1]}">{{board[bigIndex-1][index-1]}}</div>
     </div>  
@@ -42,6 +42,7 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]],
+      allowed:[true,true,true,true,true,true,true,true,true],
       xturn: true,
       complete: false,
       winner: null,
@@ -50,7 +51,7 @@ export default {
   },
   methods: {
     play(bigIndex, index){
-      if (this.occupied[bigIndex][index])
+      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex])
       {
         return//add null noise
       }
@@ -67,6 +68,12 @@ export default {
       this.xturn = !this.xturn
       this.calculateWin([bigIndex]);
       this.calculateTie();
+
+    //must move to selected miniboard
+      for (let j = 0; j <= 8; j++){
+        this.allowed[j]=false;
+      }
+      this.allowed[index]=true;
     },
   
   calculateWin(bigIndex) {
@@ -91,6 +98,7 @@ export default {
     for (let i = 0; i <= 8; i++){
       for (let j = 0; j <= 8; j++){
         this.board[i][j] = "";
+        this.occupied[i][j] = false;
       }
     }    
     this.complete = false;
