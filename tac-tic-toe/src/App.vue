@@ -5,8 +5,9 @@
   <div class="game">
     <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
     <div class="miniBoard">    
-      <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1]}">{{board[bigIndex-1][index-1]}}</div>
+      <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
     </div>  
+      <div class="bigBoard">{{board[9][bigIndex-1]}}</div>
     </div>    
   </div>
   <h1 v-if="xturn">X's Turn</h1>
@@ -35,7 +36,18 @@ export default {
               ["","","","","","","","",""],
               ["","","","","","","","",""],
               ["","","","","","","","",""]],
+
       occupied: [[false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]],
+
+      lastMove: [[false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
@@ -76,6 +88,16 @@ export default {
         this.allowed[j]=false;
       }
       this.allowed[index]=true;
+      this.lastMove =[[false,false,false,false,false,false,false,false,false],//reset where the last move was
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]];
+      this.lastMove[bigIndex][index] = true;
     },
   
   calculateWin(bigIndex) {
@@ -183,7 +205,15 @@ h2 {
   display: grid;
   width: 100px;
   height: 100px;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto auto auto;  
+  z-index:2;
+}
+
+.bigBoard {
+  font-size: 75px;
+  position: absolute;
+  z-index:3;
+  opacity: 0.5;
 }
 
 .square {
@@ -216,6 +246,11 @@ h2 {
 
 .occupied:hover {
   background: #ff3a3a;
+}
+
+.lastMove {
+  background: #89CFF0;
+  opacity: 0.5;
 }
 
 .win {
