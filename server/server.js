@@ -6,10 +6,10 @@ const io = require('socket.io')(server, {
     }
 });
 io.on('connection', (socket)=> {
-//    socket.emit("hello", "world");
-        socket.on("play", index => {
-        //   console.log("played ", index)
-        socket.broadcast.emit("play", index)
+        socket.emit("hello", "world");
+        socket.on("play", (bigIndex, index) => {
+           //console.log("played ", index)
+        socket.broadcast.emit("play", (bigIndex, index))
         })
 })
 

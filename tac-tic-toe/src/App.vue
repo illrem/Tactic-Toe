@@ -1,20 +1,48 @@
 
 <template>
-<div class="container"> 
-  <h1>TacTic Toe</h1>
-  <div class="game">
-    <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
-    <div class="miniBoard">    
-      <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
-    </div>  
-      <div class="bigBoard">{{board[9][bigIndex-1]}}</div>
-    </div>    
+<div class="container">
+  <div   v-bind:class="{hidden:local||online}"> 
+    <h2 > Welcome to TacticToe </h2>
+    <button @click="setLocal" >Local</button>
+    <button @click="setOnline()" >Online</button>  
+    <button @click="resetBoard()" >Puzzles(coming soon)</button>
+    <button @click="resetBoard()" >tutorial(coming soon)</button>
   </div>
-  <h1 v-if="xturn">X's Turn</h1>
-  <h1 v-if="!xturn">O's Turn</h1>
-  <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
-  <h2 v-if="tie"> Tie Game </h2>
-  <button @click="resetBoard()" v-if="complete || tie">RESET</button>
+
+  <div v-bind:class="{hidden:!local}">
+    <h1>TacTic Toe</h1>
+    <div class="game">
+      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
+        <div class="miniBoard">    
+          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
+        </div>  
+        <div class="bigBoard">{{board[9][bigIndex-1]}}</div>
+      </div>    
+    </div>
+    <h1 v-if="xturn">X's Turn</h1>
+    <h1 v-if="!xturn">O's Turn</h1>
+    <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
+    <h2 v-if="tie"> Tie Game </h2>
+    <button @click="resetBoard()" v-if="complete || tie">RESET</button>
+  </div>
+
+  <div v-bind:class="{hidden:!online}">
+    <h1>TacTic Toe</h1>
+    <div class="game">
+      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
+        <div class="miniBoard">    
+          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
+        </div>  
+        <div class="bigBoard">{{board[9][bigIndex-1]}}</div>
+      </div>    
+    </div>
+    <h1 v-if="xturn">X's Turn</h1>
+    <h1 v-if="!xturn">O's Turn</h1>
+    <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
+    <h2 v-if="tie"> Tie Game </h2>
+    <button @click="resetBoard()" v-if="complete || tie">RESET</button>
+  </div>
+
 </div>
 </template>
 <script>
@@ -26,6 +54,8 @@ export default {
   },
   data() {
     return {
+      local:false,online:false,
+
       board: [["","","","","","","","",""],
               ["","","","","","","","",""],
               ["","","","","","","","",""],
@@ -69,7 +99,10 @@ export default {
       {
         return//add null noise
       }
-      socket.emit("play", index);
+      if (this.online){
+        //console.log("played: index");
+        socket.emit("play", {bigIndex, index});
+      }
       this.draw(bigIndex, index);
     },
     draw(bigIndex, index) {
@@ -156,13 +189,21 @@ export default {
       }
     }    
       this.tie = true;
-  }  
+  },
+  setLocal(){
+    this.local=true;
+  },
+  setOnline(){
+    this.online=true;
+  }
 },
 created() {
-    //socket.on("play", (msg) =>{
-      //console.log("Play ", msg)
-    //  this.draw(msg)
-    //})
+  //if (this.online == true){
+    socket.on("play", (bigIndex, index) =>{
+      console.log("Play ", bigIndex)
+      this.draw(bigIndex, index)
+    })      
+  //}
   }
 
   }
@@ -311,6 +352,9 @@ button:hover {
 
 .draw {
   color: orangered;
+}
+.hidden{
+  display:none;
 }
 
 @media only screen and (max-width: 600px) {
