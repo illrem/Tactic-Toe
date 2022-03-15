@@ -24,7 +24,7 @@ io.on('connection', (socket)=> {
            bigIndex = data.bigIndex;
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
-        io.to(roomName).emit("Print", "Play recieved");
+        //io.to(roomName).emit("Print", "Play recieved");
         });
         socket.on("newGame", function(data) {
             
