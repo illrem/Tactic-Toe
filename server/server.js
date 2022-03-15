@@ -36,7 +36,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("joinGame", function(data) {            
             //socket.emit("Print", "join request recieved: " + data)
-            
+            let roomName = data;
             rooms[socket.id] = roomName;
 
             socket.join(roomName);
