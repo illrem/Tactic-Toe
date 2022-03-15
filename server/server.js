@@ -26,7 +26,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("newGame", function(data) {
             
-            socket.emit("Print", socket.id)
+            //socket.emit("Print", socket.id)
             let roomName = 1;//roomno++;
             rooms[socket.id] = roomName;
             moves[roomName] = [];
