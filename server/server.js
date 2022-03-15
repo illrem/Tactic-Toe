@@ -11,6 +11,7 @@ const { getMoves, addMove } = require('./game.js');
 
 const moves = {};
 const rooms = {};
+let roomno = 0;
 
 io.on('connection', (socket)=> {
         //socket.emit("hello", "world");
@@ -23,7 +24,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("newGame", function(data) {
             
-            let roomName = 1 + rooms.length;
+            let roomName = roomno++;
             rooms[socket.id] = roomName;
             socket.emit('gameCode', roomName)
             moves[roomName] = [];
