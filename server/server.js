@@ -7,7 +7,7 @@ const io = require('socket.io')(server, {
 });
 
 const { getMoves, addMove } = require('./game.js');
-const { makeid } = require('./utils.js');
+//const { makeid } = require('./utils.js');
 
 const moves = {};
 const rooms = {};
@@ -22,7 +22,17 @@ io.on('connection', (socket)=> {
         io.sockets.in(1).emit("play", {bigIndex:bigIndex, index:index});
         });
         socket.on("newGame", function(data) {
-            let roomName = 1;//makeid(5);//create a game id 
+            do {
+                let roomName='';
+                let charaters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let charlength = charaters.length;
+            
+                for (var i = 0; i< 5; i++)
+                {
+                    roomName += charaters.charAt(Math.floor(Math.random()* charlength));
+                }
+            }while(rooms.includes(roomName));
+            
             rooms[socket.id] = roomName;
             socket.emit('gameCode', roomName)
             moves[roomName] = [];
