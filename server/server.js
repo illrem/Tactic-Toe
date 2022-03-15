@@ -37,6 +37,7 @@ io.on('connection', (socket)=> {
         socket.on("joinGame", function(data) {            
             socket.emit("Print", "join request recieved");
             gameCode = data;
+            socket.emit("Print", gameCode);
             //const room = io.sockets.adapter.rooms[gameCode];//grab the current room
             let clients = io.sockets.adapter.rooms.get(gameCode).size;
             
