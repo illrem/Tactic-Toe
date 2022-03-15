@@ -39,8 +39,8 @@ io.on('connection', (socket)=> {
             socket.emit("Print", data);
             gameCode = data;
             //const room = io.sockets.adapter.rooms[gameCode];//grab the current room
-            let clients = io.sockets.adapter.rooms.get(gameCode).size;
-            
+            //let clients = io.sockets.adapter.rooms.get(gameCode).size;
+            let clients = 1;
             socket.emit("Print", clients);
             /* let allUsers;
             if (room) {
