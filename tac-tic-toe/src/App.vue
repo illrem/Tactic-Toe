@@ -36,7 +36,6 @@
 
   <div v-bind:class="{hidden:!online || !onlineStart}">
     <h1>TacTic Toe</h1>    
-    <h1> Code: {{gameCode}}</h1>
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
         <div class="miniBoard">    
@@ -112,8 +111,8 @@ export default {
         return//add null noise
       }
       if (this.online){
-        //console.log(index);
-        //console.log(bigIndex);
+        console.log(index);
+        console.log(bigIndex);
         socket.emit("play", { bigIndex:bigIndex, index:index});
       }
       this.draw(bigIndex, index);
