@@ -212,7 +212,8 @@ export default {
     this.online=false;
   },
   setOnlineNew(){
-    socket.emit("newGame");
+    socket.emit("newGame");       
+    this.onlineStart = true;
   },
   setOnlineJoin(){
     var code = document.getElementById("code").value;
