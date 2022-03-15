@@ -66,14 +66,14 @@ io.on('connection', (socket)=> {
                 socket.emit('fail');
                 return;
             } */
+            socket.emit("Print", "i");
+            rooms[socket.id] = gameCode;socket.emit("Print", "i");
 
-            rooms[socket.id] = gameCode;
-
-            socket.join(gameCode);
-            socket.number = 1;
-            socket.emit("gameCode", roomName);
-            socket.emit("initialized", 1);
-            io.sockets.in(gameCode).emit("start", true);
+            socket.join(gameCode);socket.emit("Print", "i");
+            socket.number = 1;socket.emit("Print", "i");
+            socket.emit("gameCode", roomName);socket.emit("Print", "i");
+            socket.emit("initialized", 1);socket.emit("Print", "i");
+            io.sockets.in(gameCode).emit("start", true);socket.emit("Print", "i");
         })
 })
 
