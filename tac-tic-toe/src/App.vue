@@ -216,7 +216,8 @@ export default {
   },
   setOnlineJoin(){
     var code = document.getElementById("code").value;
-    socket.emit("joinGame", code);
+    socket.emit("joinGame", code);    
+    this.onlineStart = true;
   },
   setGameCode(gc){
     this.gameCode = gc;
