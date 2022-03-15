@@ -24,7 +24,7 @@
         <div class="miniBoard">    
           <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
-        <div class="bigBoard">{{board[9][bigIndex-1]}}</div>
+        <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
       </div>    
     </div>
     <h1 v-if="xturn">X's Turn</h1>
@@ -41,7 +41,7 @@
         <div class="miniBoard">    
           <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
-        <div class="bigBoard">{{board[9][bigIndex-1]}}</div>
+        <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
       </div>    
     </div>
     <h1 v-if="xturn">X's Turn</h1>
@@ -119,7 +119,7 @@ export default {
       this.draw(bigIndex, index);
     },
     onlinePlay(bigIndex, index){
-      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || !canGo)
+      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || !this.canGo)
       {
         return//add null noise
       }
@@ -327,6 +327,10 @@ h2 {
   font-size: 3rem;
   font-weight: bold;
   border: 3px solid black;
+}
+
+.squareOverlay{
+  pointer-events: none;
 }
 
 .miniSquare {
