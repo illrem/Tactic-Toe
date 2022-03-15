@@ -27,7 +27,7 @@ io.on('connection', (socket)=> {
                 let charaters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
                 let charlength = charaters.length;
             
-                for (var i = 0; i< 5; i++)
+                for (let i = 0; i< 5; i++)
                 {
                     roomName += charaters.charAt(Math.floor(Math.random()* charlength));
                 }
