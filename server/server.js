@@ -15,13 +15,13 @@ let roomno = 0;
 
 io.on('connection', (socket)=> {
         //socket.emit("hello", "world");
-        socket.emit("Print", "connection successfull");
+        //socket.emit("Print", "connection successfull");
         socket.on("play", function(data) {
            //console.log("played ", data.index)
            let index = data.index;
            let bigIndex = data.bigIndex;
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
-        io.to(1).emit("play", {bigIndex:bigIndex, index:index});
+        io.to(roomName).emit("play", {bigIndex:bigIndex, index:index});
         });
         socket.on("newGame", function(data) {
             
@@ -32,7 +32,6 @@ io.on('connection', (socket)=> {
             socket.join(roomName);
             socket.number = 0;            
             socket.emit('gameCode', roomName)
-            socket.emit("initialized", 0);
         });
         socket.on("joinGame", function(data) {            
             //socket.emit("Print", "join request recieved: " + data)
@@ -41,8 +40,7 @@ io.on('connection', (socket)=> {
 
             socket.join(roomName);
             socket.number = 1;
-            socket.emit("gameCode", roomName);
-            socket.emit("initialized", 1);
+            socket.emit("gameCode", roomName)
             io.sockets.in(gameCode).emit("start", true);
         })
 })
