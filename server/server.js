@@ -41,11 +41,11 @@ io.on('connection', (socket)=> {
             socket.emit('gameCode', roomName)
         });
         socket.on("joinGame", function(data) {            
-            socket.emit("Print", "join request recieved: " + data)
+            //socket.emit("Print", "join request recieved: " + data)
             let roomName = data;
             rooms[socket.id] = roomName;            
-            io.to(roomName).emit("Print", "request recieved");
             socket.join(roomName);
+            io.to(roomName).emit("Print", "Room joined");
             socket.number = 1;            
             io.sockets.in(gameCode).emit("start", true);
             socket.emit("gameCode", roomName)
