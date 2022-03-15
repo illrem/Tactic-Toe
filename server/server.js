@@ -23,7 +23,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("newGame", function(data) {
             
-            let roomName=rooms.length+1;
+            let roomName = 1 + rooms.length;
             rooms[socket.id] = roomName;
             socket.emit('gameCode', roomName)
             moves[roomName] = [];
