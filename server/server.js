@@ -16,11 +16,12 @@ let roomno = 0;
 io.on('connection', (socket)=> {
         //socket.emit("hello", "world");
         //socket.emit("Print", "connection successfull");
+        let index = 0;let bigIndex = 0;
         socket.on("play", function(data) {
            //io.to().emit("Print", "Play recieved");
            //console.log("played ", data.index)
-           let index = data.index;
-           let bigIndex = data.bigIndex;
+           index = data.index;
+           bigIndex = data.bigIndex;
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
         io.to(roomName).emit("Print", "Play recieved");
