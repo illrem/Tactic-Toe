@@ -35,7 +35,7 @@ io.on('connection', (socket)=> {
             socket.emit("initialized", 0);
         });
         socket.on("joinGame", function(data) {            
-            socket.emit("Print", "join request recieved");
+            socket.emit("Print", "join request recieved: " + data);
             gameCode = data;
             const room = io.sockets.adapter.rooms[gameCode];//grab the current room
 
