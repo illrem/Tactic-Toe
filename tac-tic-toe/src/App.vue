@@ -96,6 +96,7 @@ export default {
                 [false,false,false,false,false,false,false,false,false]],
       allowed:[true,true,true,true,true,true,true,true,true],
       xturn: true,
+      canGo: true,
       complete: false,
       winner: null,
       tie: false,
@@ -118,7 +119,7 @@ export default {
       this.draw(bigIndex, index);
     },
     onlinePlay(bigIndex, index){
-      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex])
+      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || !canGo)
       {
         return//add null noise
       }
@@ -154,6 +155,7 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]];
       this.lastMove[bigIndex][index] = true;
+      this.canGo = !this.cango;
     },
   
   calculateWin(bigIndex) {
@@ -228,6 +230,7 @@ export default {
     //this.onlineStart = true;
   },
   setOnlineJoin(){
+    this.canGo = false;
     var code = document.getElementById("code").value;
     socket.emit("joinGame", code);   
     console.log("sent join request: " + code) 
