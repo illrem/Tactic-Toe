@@ -235,6 +235,14 @@ created() {
       this.gameCode = data;
       this.setGameCode(this.gameCode);
       console.log(this.gameCode);
+    });
+
+    socket.on("start",(data) => {
+      this.onlineStart = data;
+    });
+
+    socket.on("Print", function(data){
+      console.log(data);
     })
   //}
   }
