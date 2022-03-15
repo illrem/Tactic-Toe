@@ -239,6 +239,7 @@ created() {
 
     socket.on("start",(data) => {
       this.onlineStart = data;
+      console.log("start game")
     });
 
     socket.on("Print", function(data){
