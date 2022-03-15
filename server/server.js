@@ -22,7 +22,7 @@ io.on('connection', (socket)=> {
         io.sockets.in(1).emit("play", {bigIndex:bigIndex, index:index});
         });
         socket.on("newGame", function(data) {
-            let roomName = 1;//makeid(5);//create a game id 
+            let roomName = makeid(5);//create a game id 
             rooms[socket.id] = roomName;
             socket.emit('gameCode', roomName)
             moves[roomName] = [];
