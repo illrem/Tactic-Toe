@@ -36,7 +36,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("joinGame", function(data) {            
             socket.emit("Print", "join request recieved: " + data);
-            let gameCode = data;
+            let roomName = data;
             //const room = io.sockets.adapter.rooms[gameCode];//grab the current room
 
             /* let allUsers;
@@ -67,9 +67,9 @@ io.on('connection', (socket)=> {
                 return;
             } */
             socket.emit("Print", "i");
-            rooms[socket.id] = gameCode;socket.emit("Print", "i");
+            rooms[socket.id] = roomName;socket.emit("Print", "i");
 
-            socket.join(gameCode);socket.emit("Print", "i");
+            socket.join(roomName);socket.emit("Print", "i");
             socket.number = 1;socket.emit("Print", "i");
             socket.emit("gameCode", roomName);socket.emit("Print", "i");
             socket.emit("initialized", 1);socket.emit("Print", "i");
