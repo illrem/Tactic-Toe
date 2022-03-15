@@ -39,7 +39,7 @@
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
         <div class="miniBoard">    
-          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
+          <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
         <div class="bigBoard">{{board[9][bigIndex-1]}}</div>
       </div>    
@@ -116,6 +116,17 @@ export default {
         socket.emit("play", { bigIndex:bigIndex, index:index});
       }
       this.draw(bigIndex, index);
+    },
+    onlinePlay(bigIndex, index){
+      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex])
+      {
+        return//add null noise
+      }
+      if (this.online){
+        console.log(index);
+        console.log(bigIndex);
+        socket.emit("play", { bigIndex:bigIndex, index:index});
+      }
     },
     draw(bigIndex, index) {
       if(this.xturn) {//if is x's turn mark as x
