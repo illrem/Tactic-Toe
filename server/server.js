@@ -36,36 +36,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("joinGame", function(data) {            
             socket.emit("Print", "join request recieved: " + data);
-            //let roomName = data;
-            //const room = io.sockets.adapter.rooms[gameCode];//grab the current room
-
-            /* let allUsers;
-            if (room) {
-                allUsers = room.sockets;
-            }
             
-            let clients = 0;
-            if (allUsers) {
-                clients = object.keys(allUsers).length;
-
-                if (clients < 1)
-                {
-                    socket.emit("Print", "failed");
-                    socket.emit('fail');
-                    return;
-                }
-                else if (clients > 1)
-                {
-                    socket.emit("Print", "spectator");
-                    socket.emit('spectator');// add spectator handling
-                    return;
-                }
-            }
-            else {
-                socket.emit("Print", "failed2");
-                socket.emit('fail');
-                return;
-            } */
             socket.emit("Print", "i");
             rooms[socket.id] = roomName;socket.emit("Print", "i");
 
