@@ -31,6 +31,7 @@ io.on('connection', (socket)=> {
             moves[roomName] = [];
 
             socket.join(roomName);
+            socket.emit("Print", socket.rooms)
             socket.number = 0;            
             socket.emit('gameCode', roomName)
         });

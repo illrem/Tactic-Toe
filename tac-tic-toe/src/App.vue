@@ -111,8 +111,8 @@ export default {
         return//add null noise
       }
       if (this.online){
-        console.log(index);
-        console.log(bigIndex);
+        //console.log(index);
+        //console.log(bigIndex);
         socket.emit("play", { bigIndex:bigIndex, index:index});
       }
       this.draw(bigIndex, index);
