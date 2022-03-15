@@ -4,13 +4,16 @@
   <div   v-bind:class="{hidden:local||online}"> 
     <h2 > Welcome to TacticToe </h2>
     <button @click="setLocal" >Local</button>
-    <button @click="setOnline()" >Online</button>  
+    <button @click="setOnline()" >Online</button>    
     
-    <button @click="setOnlineNew()" >new game</button>
-    <button @click="setOnlineJoin()" >join game</button>
-    <h1> code: {{gameCode}}</h1>
     <button @click="resetBoard()" >Puzzles(coming soon)</button>
     <button @click="resetBoard()" >tutorial(coming soon)</button>
+  </div>
+  <div v-bind:class="{hidden:!online || onlineStart}">
+    <button @click="setOnlineNew()" >new game</button>
+    <input type="text" id="code">
+    <button @click="setOnlineJoin()" >join game</button>    
+    <button @click="revokeOnline()" >Back</button>
   </div>
 
   <div v-bind:class="{hidden:!local}">
@@ -30,8 +33,9 @@
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
   </div>
 
-  <div v-bind:class="{hidden:!online}">
-    <h1>TacTic Toe</h1>
+  <div v-bind:class="{hidden:!online || !onlineStart}">
+    <h1>TacTic Toe</h1>    
+    <h1> Code: {{gameCode}}</h1>
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
         <div class="miniBoard">    
@@ -96,7 +100,8 @@ export default {
       winner: null,
       tie: false,
 
-      gameCode: null
+      gameCode: null,
+      onlineStart: false
     }
   },
   methods: {
@@ -200,13 +205,18 @@ export default {
   setLocal(){
     this.local=true;
   },
+  setOnline(){    
+    this.online=true;
+  },
+  revokeOnline(){    
+    this.online=false;
+  },
   setOnlineNew(){
-    //this.online=true;    
     socket.emit("newGame");
   },
   setOnlineJoin(){
-    this.online=true;
-    socket.emit("joinGame", 1);
+    var code = document.getElementById("code").value;
+    socket.emit("joinGame", code);
   },
   setGameCode(gc){
     this.gameCode = gc;
@@ -215,10 +225,10 @@ export default {
 created() {
   //if (this.online == true){
 
-    socket.on("play", function (data){
-      console.log("Play ", data.bigIndex)
-      console.log("Play ", data.index)
-      //draw(data.bigIndex, data.index)
+    socket.on("play",(data) => {
+      console.log("Play ", data.bigIndex);
+      console.log("Play ", data.index);
+      this.draw(data.bigIndex, data.index);
     });      
 
     socket.on("gameCode", (data) => {
