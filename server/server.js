@@ -48,7 +48,8 @@ io.on('connection', (socket)=> {
             socket.join(roomName);
             io.to(roomName).emit("Print", "Room joined");
             socket.number = 1;            
-            io.sockets.in(gameCode).emit("start", true);
+            //io.sockets.in(gameCode).emit("start", true);
+            io.to(roomName).emit("start", true);
             socket.emit("gameCode", roomName)
         })
 })
