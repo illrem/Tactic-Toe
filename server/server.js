@@ -35,16 +35,16 @@ io.on('connection', (socket)=> {
             socket.emit("initialized", 0);
         });
         socket.on("joinGame", function(data) {            
-            socket.emit("Print", "join request recieved: " + data);
+            socket.emit("Print", "join request recieved: " + data)
             
-            socket.emit("Print", "i");
-            rooms[socket.id] = roomName;socket.emit("Print", "i");
+            socket.emit("Print", "i")
+            rooms[socket.id] = roomName;socket.emit("Print", "i")
 
-            socket.join(roomName);socket.emit("Print", "i");
-            socket.number = 1;socket.emit("Print", "i");
-            socket.emit("gameCode", roomName);socket.emit("Print", "i");
-            socket.emit("initialized", 1);socket.emit("Print", "i");
-            io.sockets.in(gameCode).emit("start", true);socket.emit("Print", "i");
+            socket.join(roomName);socket.emit("Print", "i")
+            socket.number = 1;socket.emit("Print", "i")
+            socket.emit("gameCode", roomName);socket.emit("Print", "i")
+            socket.emit("initialized", 1);socket.emit("Print", "i")
+            io.sockets.in(gameCode).emit("start", true);socket.emit("Print", "i")
         })
 })
 
