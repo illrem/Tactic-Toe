@@ -17,12 +17,12 @@ io.on('connection', (socket)=> {
         //socket.emit("hello", "world");
         //socket.emit("Print", "connection successfull");
         socket.on("play", function(data) {
-           io.to(rooms[socket.id]).emit("Print", "Play recieved");
+           //io.to().emit("Print", "Play recieved");
            //console.log("played ", data.index)
            let index = data.index;
            let bigIndex = data.bigIndex;
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
-        //io.to(roomName).emit("play", {bigIndex:bigIndex, index:index});        
+        io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
         io.to(roomName).emit("Print", "Play recieved");
         });
         socket.on("newGame", function(data) {
