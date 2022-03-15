@@ -50,16 +50,19 @@ io.on('connection', (socket)=> {
 
                 if (clients < 1)
                 {
+                    socket.emit("Print", "failed");
                     socket.emit('fail');
                     return;
                 }
                 else if (clients > 1)
                 {
+                    socket.emit("Print", "spectator");
                     socket.emit('spectator');// add spectator handling
                     return;
                 }
             }
             else {
+                socket.emit("Print", "failed2");
                 socket.emit('fail');
                 return;
             }
@@ -68,7 +71,7 @@ io.on('connection', (socket)=> {
 
             socket.join(gameCode);
             socket.number = 1;
-            socket.emit('gameCode', roomName);
+            socket.emit("gameCode", roomName);
             socket.emit("initialized", 1);
             io.sockets.in(gameCode).emit("start", true);
         })
