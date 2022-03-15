@@ -37,9 +37,9 @@ io.on('connection', (socket)=> {
         socket.on("joinGame", function(data) {            
             socket.emit("Print", "join request recieved: " + data);
             gameCode = data;
-            const room = io.sockets.adapter.rooms[gameCode];//grab the current room
+            //const room = io.sockets.adapter.rooms[gameCode];//grab the current room
 
-            let allUsers;
+            /* let allUsers;
             if (room) {
                 allUsers = room.sockets;
             }
@@ -65,7 +65,7 @@ io.on('connection', (socket)=> {
                 socket.emit("Print", "failed2");
                 socket.emit('fail');
                 return;
-            }
+            } */
 
             rooms[socket.id] = gameCode;
 
