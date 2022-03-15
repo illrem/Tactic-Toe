@@ -21,7 +21,7 @@ io.on('connection', (socket)=> {
            let index = data.index;
            let bigIndex = data.bigIndex;
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
-        io.sockets.in(1).emit("play", {bigIndex:bigIndex, index:index});
+        io.to(1).emit("play", {bigIndex:bigIndex, index:index});
         });
         socket.on("newGame", function(data) {
             
@@ -35,7 +35,7 @@ io.on('connection', (socket)=> {
             socket.emit("initialized", 0);
         });
         socket.on("joinGame", function(data) {            
-        socket.emit("Print", "join request recieved");
+            socket.emit("Print", "join request recieved");
             gameCode = data;
             const room = io.sockets.adapter.rooms[gameCode];//grab the current room
 
