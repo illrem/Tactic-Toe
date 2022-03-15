@@ -5,6 +5,10 @@
     <h2 > Welcome to TacticToe </h2>
     <button @click="setLocal" >Local</button>
     <button @click="setOnline()" >Online</button>  
+    
+    <button @click="setOnlineNew()" >new game</button>
+    <button @click="setOnlineJoin()" >join game</button>
+    <h1> code: {{gameCode}}</h1>
     <button @click="resetBoard()" >Puzzles(coming soon)</button>
     <button @click="resetBoard()" >tutorial(coming soon)</button>
   </div>
@@ -47,7 +51,7 @@
 </template>
 <script>
 import io from 'socket.io-client'
-const socket = io("http://localhost:3000")
+const socket = io("https://serene-citadel-00320.herokuapp.com/")
 export default {
   name: 'App',
   components: {
@@ -90,7 +94,9 @@ export default {
       xturn: true,
       complete: false,
       winner: null,
-      tie: false
+      tie: false,
+
+      gameCode: null
     }
   },
   methods: {
@@ -100,8 +106,9 @@ export default {
         return//add null noise
       }
       if (this.online){
-        //console.log("played: index");
-        socket.emit("play", {bigIndex, index});
+        console.log(index);
+        console.log(bigIndex);
+        socket.emit("play", { bigIndex:bigIndex, index:index});
       }
       this.draw(bigIndex, index);
     },
@@ -116,7 +123,7 @@ export default {
       this.calculateWin([bigIndex]);
       this.calculateTie();
 
-    //must move to selected miniboard
+      //must move to selected miniboard
       for (let j = 0; j <= 8; j++){
         this.allowed[j]=false;
       }
@@ -193,16 +200,32 @@ export default {
   setLocal(){
     this.local=true;
   },
-  setOnline(){
+  setOnlineNew(){
+    //this.online=true;    
+    socket.emit("newGame");
+  },
+  setOnlineJoin(){
     this.online=true;
+    socket.emit("joinGame", 1);
+  },
+  setGameCode(gc){
+    this.gameCode = gc;
   }
 },
 created() {
   //if (this.online == true){
-    socket.on("play", (bigIndex, index) =>{
-      console.log("Play ", bigIndex)
-      this.draw(bigIndex, index)
-    })      
+
+    socket.on("play", function (data){
+      console.log("Play ", data.bigIndex)
+      console.log("Play ", data.index)
+      //draw(data.bigIndex, data.index)
+    });      
+
+    socket.on("gameCode", (data) => {
+      this.gameCode = data;
+      this.setGameCode(this.gameCode);
+      console.log(this.gameCode);
+    })
   //}
   }
 
