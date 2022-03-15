@@ -31,7 +31,8 @@ io.on('connection', (socket)=> {
             moves[roomName] = [];
             //socket.join(roomName);
 
-            await socket.join(roomName)
+            //await 
+            socket.join(roomName)
             io.to(roomName).emit("Print", "request recieved");
             socket.emit("Print", socket.rooms)
             
