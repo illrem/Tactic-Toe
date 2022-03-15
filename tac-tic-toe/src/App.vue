@@ -9,7 +9,8 @@
     <button @click="resetBoard()" >Puzzles(coming soon)</button>
     <button @click="resetBoard()" >tutorial(coming soon)</button>
   </div>
-  <div v-bind:class="{hidden:!online || onlineStart}">
+  <div v-bind:class="{hidden:!online || onlineStart}">  
+    <h1> Code: {{gameCode}}</h1>
     <button @click="setOnlineNew()" >new game</button>
     <input type="text" id="code">
     <button @click="setOnlineJoin()" >join game</button>    
@@ -212,14 +213,15 @@ export default {
     this.online=false;
   },
   setOnlineNew(){
-    socket.emit("newGame");       
-    this.onlineStart = true;
+    socket.emit("newGame");     
+
+    //this.onlineStart = true;
   },
   setOnlineJoin(){
     var code = document.getElementById("code").value;
     socket.emit("joinGame", code);   
     console.log("sent join request: " + code) 
-    this.onlineStart = true;
+    //this.onlineStart = true;
   },
   setGameCode(gc){
     this.gameCode = gc;
@@ -229,15 +231,15 @@ created() {
   //if (this.online == true){
 
     socket.on("play",(data) => {
-      console.log("Play ", data.bigIndex);
-      console.log("Play ", data.index);
+      //console.log("Play ", data.bigIndex);
+      //console.log("Play ", data.index);
       this.draw(data.bigIndex, data.index);
     });      
 
     socket.on("gameCode", (data) => {
       this.gameCode = data;
       this.setGameCode(this.gameCode);
-      console.log(this.gameCode);
+      console.log("Gamecode returned: ", this.gameCode);
     });
 
     socket.on("start",(data) => {

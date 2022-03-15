@@ -26,6 +26,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("newGame", function(data) {
             
+            socket.emit("Print", socket.id)
             let roomName = 1;//roomno++;
             rooms[socket.id] = roomName;
             moves[roomName] = [];
@@ -34,7 +35,7 @@ io.on('connection', (socket)=> {
             //await 
             socket.join(roomName)
             io.to(roomName).emit("Print", "request recieved");
-            socket.emit("Print", socket.rooms)
+            //socket.emit("Print", socket.rooms)
             
             socket.number = 0;            
             socket.emit('gameCode', roomName)
@@ -45,9 +46,9 @@ io.on('connection', (socket)=> {
             rooms[socket.id] = roomName;
 
             socket.join(roomName);
-            socket.number = 1;
-            socket.emit("gameCode", roomName)
+            socket.number = 1;            
             io.sockets.in(gameCode).emit("start", true);
+            socket.emit("gameCode", roomName)
         })
 })
 
