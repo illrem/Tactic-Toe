@@ -66,7 +66,7 @@ io.on('connection', (socket)=> {
 
             rooms[socket.id] = gameCode;
 
-            socket.join(gameCode)
+            socket.join(gameCode);
             socket.number = 1;
             socket.emit('gameCode', roomName);
             socket.emit("initialized", 1);
