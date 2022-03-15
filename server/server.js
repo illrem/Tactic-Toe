@@ -32,6 +32,7 @@ io.on('connection', (socket)=> {
             //socket.join(roomName);
 
             await socket.join(roomName)
+            io.to(roomName).emit("Print", "request recieved");
             socket.emit("Print", socket.rooms)
             
             socket.number = 0;            
