@@ -6,8 +6,8 @@ const io = require('socket.io')(server, {
     }
 });
 
-//const { getMoves, addMove } = require('./game.js');
-//const { makeid } = require('./utils.js');
+const { getMoves, addMove } = require('./game.js');
+const { makeid } = require('./utils.js');
 
 const moves = {};
 const rooms = {};
