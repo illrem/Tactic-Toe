@@ -222,8 +222,7 @@ export default {
     this.onlineStart = true;
   },
   setGameCode(gc){
-    this.gameCode = gc;    
-    console.log(this.gameCode);
+    this.gameCode = gc;
   }
 },
 created() {
@@ -238,6 +237,7 @@ created() {
     socket.on("gameCode", (data) => {
       this.gameCode = data;
       this.setGameCode(this.gameCode);
+      console.log(this.gameCode);
     });
 
     socket.on("start",(data) => {
