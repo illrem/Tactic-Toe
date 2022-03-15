@@ -216,8 +216,9 @@ export default {
     this.onlineStart = true;
   },
   setOnlineJoin(){
-    var code = document.getElementById("code").value;
-    socket.emit("joinGame", code);    
+    //var code = document.getElementById("code").value;
+    socket.emit("joinGame", 0);   
+    console.log("sent join request") 
     this.onlineStart = true;
   },
   setGameCode(gc){
@@ -241,7 +242,7 @@ created() {
 
     socket.on("start",(data) => {
       this.onlineStart = data;
-      console.log("start game")
+      console.log("start game");
     });
 
     socket.on("Print", function(data){
