@@ -15,6 +15,7 @@ let roomno = 0;
 
 io.on('connection', (socket)=> {
         //socket.emit("hello", "world");
+        socket.emit("Print", "connection successfull");
         socket.on("play", function(data) {
            //console.log("played ", data.index)
            let index = data.index;
@@ -24,7 +25,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("newGame", function(data) {
             
-            let roomName = roomno++;
+            let roomName = 1;//roomno++;
             rooms[socket.id] = roomName;
             socket.emit('gameCode', roomName)
             moves[roomName] = [];
@@ -33,7 +34,8 @@ io.on('connection', (socket)=> {
             socket.number = 0;
             socket.emit("initialized", 0);
         });
-        socket.on("joinGame", function(data) {
+        socket.on("joinGame", function(data) {            
+        socket.emit("Print", "join request recieved");
             gameCode = data;
             const room = io.sockets.adapter.rooms[gameCode];//grab the current room
 
