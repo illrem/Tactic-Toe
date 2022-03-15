@@ -22,17 +22,8 @@ io.on('connection', (socket)=> {
         io.sockets.in(1).emit("play", {bigIndex:bigIndex, index:index});
         });
         socket.on("newGame", function(data) {
-            do {
-                let roomName="";
-                let charaters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                let charlength = charaters.length;
             
-                for (let i = 0; i< 5; i++)
-                {
-                    roomName += charaters.charAt(Math.floor(Math.random()* charlength));
-                }
-            }while(rooms.includes(roomName));
-            //let roomName="AAA11";
+            let roomName=rooms.length;
             rooms[socket.id] = roomName;
             socket.emit('gameCode', roomName)
             moves[roomName] = [];
