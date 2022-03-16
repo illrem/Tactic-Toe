@@ -235,7 +235,7 @@ export default {
           this.countDownTimer()
         }, 1000)
       }
-      else if (this.countDown <= 0){
+      else if (this.countDown < 1){
         if (this.xturn){
         socket.emit("win", "X")
         }
@@ -364,8 +364,8 @@ export default {
       this.undo();
     });
 
-    socket.on("win",() => {
-      this.setWin();
+    socket.on("win",(data) => {
+      this.setWin(data);
     });
 
     socket.on("Print", function(data){
