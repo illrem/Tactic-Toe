@@ -282,15 +282,16 @@ export default {
   setLocal(){
     this.local=true;
   },
-  setOnline(){    
+  setOnline(){   
+    console.log("online") 
     this.online=true;
   },
   revokeOnline(){    
     this.online=false;
   },
   setOnlineNew(){
-    socket.emit("newGame");     
-
+    socket.emit("newGame"); 
+    console.log("Newgame") 
     //this.onlineStart = true;
   },
   setOnlineJoin(){
