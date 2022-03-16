@@ -169,6 +169,7 @@ export default {
       this.lastMove[bigIndex][index] = true;
       this.canGo = !this.canGo;
       this.moves[++this.currentMove] = {bigIndex:bigIndex, index:index, squareWon:squareWon};
+      this.countDown = 20;
     },
 
     sendOnlineUndoRequest(){      
@@ -336,7 +337,6 @@ export default {
 },
   created() {
     //if (this.online == true){
-    this.countDownTimer();
     socket.on("play",(data) => {
       //console.log("Play ", data.bigIndex);
       //console.log("Play ", data.index);
@@ -351,7 +351,8 @@ export default {
     });
 
     socket.on("start",(data) => {
-      this.onlineStart = data;
+      this.onlineStart = data;      
+      this.countDownTimer();
       console.log("start game");
     });
 
@@ -363,7 +364,7 @@ export default {
       this.undo();
     });
 
-    socket.on("undo",() => {
+    socket.on("win",() => {
       this.setWin();
     });
 
