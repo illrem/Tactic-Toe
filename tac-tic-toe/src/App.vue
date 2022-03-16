@@ -37,7 +37,9 @@
 
   <div v-bind:class="{hidden:!online || !onlineStart}">
     <h1>TacTic Toe</h1>    
+    <p>Turn Time: {{ countDown }} seconds remaining!</p>    
     <div class="game">
+      <h2 class="squareOverlay" id="winner" v-if="complete"> Winner is {{winner}} </h2>
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
         <div class="miniBoard">    
           <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
@@ -109,8 +111,9 @@ export default {
       recievedUndo: false,
 
       gameCode: null,
-      onlineStart: false
-    }
+      onlineStart: false,
+      countDown: 20
+      }
   },
   methods: {
     play(bigIndex, index){
@@ -219,6 +222,31 @@ export default {
         //this.currentMove--;
       }
     },
+      //setTimeout(myTimeout1, 2000) 
+      //if not complete
+      //if reaches 20 set winner
+      //send out winner emit
+    countDownTimer() {
+      if(this.countDown > 0 && this.onlineStart) {
+        setTimeout(() => {
+          this.countDown -= 1
+          this.countDownTimer()
+        }, 1000)
+      }
+      else if (this.countDown <= 0){
+        if (this.xturn){
+        socket.emit("win", "X")
+        }
+        else{
+        socket.emit("win", "O")
+        }
+      }
+    },
+
+    setWin(winner){
+        this.complete = true;
+        this.winner = winner;
+    },
 
   calculateWin(bigIndex) {
     //console.log(bigIndex);
@@ -307,7 +335,7 @@ export default {
   },
   created() {
     //if (this.online == true){
-
+    this.countDownTimer();
     socket.on("play",(data) => {
       //console.log("Play ", data.bigIndex);
       //console.log("Play ", data.index);
@@ -332,6 +360,10 @@ export default {
 
     socket.on("undo",() => {
       this.undo();
+    });
+
+    socket.on("undo",() => {
+      this.setWin();
     });
 
     socket.on("Print", function(data){
