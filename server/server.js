@@ -15,7 +15,7 @@ let roomno = 0;
 
 io.on('connection', (socket)=> {
         //socket.emit("hello", "world");
-        //socket.emit("Print", "connection successfull");
+        socket.emit("Print", "connection successfull");
         let index = 0;let bigIndex = 0;
         socket.on("play", function(data) {
            //io.to().emit("Print", "Play recieved");
@@ -30,6 +30,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("newGame", function(data) {
             
+            socket.emit("Print", socket.id)
             //socket.emit("Print", socket.id)
             roomno++;
             let roomName = roomno.toString();
