@@ -58,7 +58,7 @@ io.on('connection', (socket)=> {
         });
         socket.on("undoRequest", function(data) {
             io.to(rooms[socket.id]).emit("undoRequest");
-        })
+        });
         socket.on("undoRequest", function(data) {
             io.to(rooms[socket.id]).emit("undo");
         })
