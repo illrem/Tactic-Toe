@@ -29,6 +29,7 @@
     </div>
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
+    <button @click="undo()" >UNDO</button>
     <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
@@ -101,6 +102,9 @@ export default {
       winner: null,
       tie: false,
 
+      moves: [],
+      currentMove: 0,
+
       gameCode: null,
       onlineStart: false
     }
@@ -112,10 +116,12 @@ export default {
         return//add null noise
       }
       if (this.online){
-        console.log(index);
-        console.log(bigIndex);
-        socket.emit("play", { bigIndex:bigIndex, index:index});
+        
+        //socket.emit("play", { bigIndex:bigIndex, index:index});
       }
+      console.log(index);
+      console.log(bigIndex);      
+      console.log("current move: " + this.currentMove);
       this.draw(bigIndex, index);
     },
     onlinePlay(bigIndex, index){
@@ -137,7 +143,7 @@ export default {
       }
       this.occupied[bigIndex][index]=true
       this.xturn = !this.xturn
-      this.calculateWin([bigIndex]);
+      let squareWon = this.calculateWin([bigIndex]);
       this.calculateTie();
 
       //must move to selected miniboard
@@ -155,16 +161,56 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]];
       this.lastMove[bigIndex][index] = true;
-      this.canGo = !this.cango;
+      this.canGo = !this.canGo;
+      this.moves[++this.currentMove] = {bigIndex:bigIndex, index:index, squareWon:squareWon};
     },
   
+    undo(){
+      if (this.currentMove > 0)
+      {
+        this.board[this.moves[this.currentMove].bigIndex][this.moves[this.currentMove].index]="";//reset space in miniboard
+        this.occupied[this.moves[this.currentMove].bigIndex][this.moves[this.currentMove].index]=false;
+        this.xturn = !this.xturn;
+        if (this.moves[this.currentMove].squareWon)
+        {
+          this.board[9][this.moves[this.currentMove].bigIndex] = "";
+        }
+        this.moves[this.currentMove] = {};//reset space in moves
+        this.lastMove =[[false,false,false,false,false,false,false,false,false],//reset where the last move was
+                  [false,false,false,false,false,false,false,false,false],
+                  [false,false,false,false,false,false,false,false,false],
+                  [false,false,false,false,false,false,false,false,false],
+                  [false,false,false,false,false,false,false,false,false],
+                  [false,false,false,false,false,false,false,false,false],
+                  [false,false,false,false,false,false,false,false,false],
+                  [false,false,false,false,false,false,false,false,false],
+                  [false,false,false,false,false,false,false,false,false]];
+        if (--this.currentMove > 1){
+            for (let j = 0; j <= 8; j++){
+              this.allowed[j]=false;
+            }
+          this.allowed[this.moves[this.currentMove].bigIndex]=true; 
+        }
+        else {
+          for (let j = 0; j <= 8; j++){
+              this.allowed[j]=true;
+            }
+        }    
+        if (this.currentMove > 0){
+          this.lastMove[this.moves[this.currentMove].bigIndex][this.moves[this.currentMove].index] = true; 
+        }      
+        this.canGo = !this.canGo;
+        //this.currentMove--;
+      }
+    },
+
   calculateWin(bigIndex) {
     //console.log(bigIndex);
     if (bigIndex < 9)
     {
       if (this.board[9][bigIndex] != "")//if this board has already been won escape
       {
-        return
+        return false;
       }
     }
     //console.log("allowed");
@@ -187,11 +233,13 @@ export default {
         }
         else{
           this.board[9][bigIndex] = this.board[bigIndex][first];
-          this.calculateWin("9");          
+          this.calculateWin("9");
+          return true;          
         }
       }
     }
     //console.log(WIN_CONDITIONS);
+    return false;
   },
   resetBoard() {
     for (let i = 0; i <= 8; i++){
@@ -241,7 +289,7 @@ export default {
   }
 },
 created() {
-  //if (this.online == true){
+  if (this.online == true){
 
     socket.on("play",(data) => {
       //console.log("Play ", data.bigIndex);
@@ -264,7 +312,7 @@ created() {
     socket.on("Print", function(data){
       console.log(data);
     })
-  //}
+  }
   }
 
   }

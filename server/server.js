@@ -22,6 +22,8 @@ io.on('connection', (socket)=> {
            //console.log("played ", data.index)
            index = data.index;
            bigIndex = data.bigIndex;
+
+           //moves[rooms[socket.id][]].size+1
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
         //io.to(roomName).emit("Print", "Play recieved");
