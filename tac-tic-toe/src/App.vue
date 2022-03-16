@@ -304,9 +304,9 @@ export default {
   setGameCode(gc){
     this.gameCode = gc;
   }
-},
-created() {
-  if (this.online == true){
+  },
+  created() {
+    //if (this.online == true){
 
     socket.on("play",(data) => {
       //console.log("Play ", data.bigIndex);
@@ -338,7 +338,7 @@ created() {
       console.log(data);
     })
   }
-  }
+  //}
 
   }
 </script>
