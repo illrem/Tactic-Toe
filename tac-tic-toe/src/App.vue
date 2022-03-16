@@ -46,7 +46,8 @@
       </div>    
     </div>
     <h1 v-if="xturn">X's Turn</h1>
-    <h1 v-if="!xturn">O's Turn</h1>
+    <h1 v-if="!xturn">O's Turn</h1>    
+    <button @click="sendOnlineUndoRequest()" v-if="!sentUndo && !recievedUndo" >UNDO</button><button @click="acceptUndoRequest()" v-if="!sentUndo && recievedUndo" >Accept UNDO</button>
     <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
@@ -104,6 +105,8 @@ export default {
 
       moves: [],
       currentMove: 0,
+      sentUndo:false,
+      recievedUndo: false,
 
       gameCode: null,
       onlineStart: false
@@ -164,8 +167,21 @@ export default {
       this.canGo = !this.canGo;
       this.moves[++this.currentMove] = {bigIndex:bigIndex, index:index, squareWon:squareWon};
     },
-  
+
+    sendOnlineUndoRequest(){      
+      this.sentUndo = true;
+      socket.emit("undoRequest");
+    },
+    recieveOnlineUndoRequest(){
+      this.recievedUndo = true;
+    },
+    acceptUndoRequest(){
+      socket.emit("acceptUndoRequest");
+    },
+
     undo(){
+      this.recievedUndo = false;           
+      this.sentUndo = false;
       if (this.currentMove > 0)
       {
         this.board[this.moves[this.currentMove].bigIndex][this.moves[this.currentMove].index]="";//reset space in miniboard
@@ -307,6 +323,14 @@ created() {
     socket.on("start",(data) => {
       this.onlineStart = data;
       console.log("start game");
+    });
+
+    socket.on("undoRequest",() => {
+      this.recieveOnlineUndoRequest();
+    });
+
+    socket.on("undo",() => {
+      this.undo();
     });
 
     socket.on("Print", function(data){

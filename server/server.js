@@ -55,6 +55,12 @@ io.on('connection', (socket)=> {
             //io.sockets.in(gameCode).emit("start", true);
             io.to(roomName).emit("start", true);
             socket.emit("gameCode", roomName)
+        });
+        socket.on("undoRequest", function(data) {
+            io.to(rooms[socket.id]).emit("undoRequest");
+        })
+        socket.on("undoRequest", function(data) {
+            io.to(rooms[socket.id]).emit("undo");
         })
 })
 
