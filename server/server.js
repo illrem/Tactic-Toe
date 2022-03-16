@@ -63,7 +63,7 @@ io.on('connection', (socket)=> {
         socket.on("acceptUndoRequest", function(data) {
             io.to(rooms[socket.id]).emit("undo");
         });
-        socket.on("acceptUndoRequest", function(data) {
+        socket.on("win", function(data) {
             let winner = data;
             io.to(rooms[socket.id]).emit("win", winner);
         })
