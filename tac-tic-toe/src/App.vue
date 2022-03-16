@@ -236,6 +236,7 @@ export default {
         }, 1000)
       }
       else if (this.countDown < 1){
+        console.log("time ran out");
         if (this.xturn){
         socket.emit("win", "X")
         }
