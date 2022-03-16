@@ -227,6 +227,7 @@ export default {
       //if reaches 20 set winner
       //send out winner emit
     countDownTimer() {
+      console.log("timer")
       if(this.countDown > 0 && this.onlineStart) {
         setTimeout(() => {
           this.countDown -= 1
@@ -332,7 +333,7 @@ export default {
   setGameCode(gc){
     this.gameCode = gc;
   }
-  },
+},
   created() {
     //if (this.online == true){
     this.countDownTimer();
