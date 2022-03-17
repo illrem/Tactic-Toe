@@ -321,7 +321,8 @@ export default {
   },
   setOnlineNew(){
     socket.emit("newGame"); 
-    console.log("Newgame"); 
+    console.log("Newgame");
+    this.canGo = true; 
     //this.onlineStart = true;
   },
   setOnlineJoin(){

@@ -27,7 +27,7 @@ io.on('connection', (socket)=> {
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
         //io.to(roomName).emit("Print", "Play recieved");
-        socket.broadcast.emit("Print",moves[rooms[socket.id]][1])
+        socket.broadcast.emit("Print",moves[rooms[socket.id]][0])
         });
         socket.on("newGame", function(data) {
             
@@ -51,14 +51,17 @@ io.on('connection', (socket)=> {
         socket.on("joinGame", function(data) {            
             //socket.emit("Print", "join request recieved: " + data)
             let roomName = data.toString();
-            rooms[socket.id] = roomName;            
-            socket.join(roomName);
-            io.to(roomName).emit("Print", "Room joined");
-            socket.number = 1;            
-            //io.sockets.in(gameCode).emit("start", true);
-            io.to(roomName).emit("start", true);            
-            //socket.emit("Print", moves[rooms[socket.id]][0]);            
-            socket.emit("gameCode", roomName)
+            if (rooms.includes(roomName))
+            {
+                rooms[socket.id] = roomName;            
+                socket.join(roomName);
+                io.to(roomName).emit("Print", "Room joined");
+                socket.number = 1;            
+                //io.sockets.in(gameCode).emit("start", true);
+                io.to(roomName).emit("start", true);            
+                //socket.emit("Print", moves[rooms[socket.id]][0]);            
+                socket.emit("gameCode", roomName)
+            }
         });
         socket.on("undoRequest", function(data) {
             io.to(rooms[socket.id]).emit("undoRequest");
