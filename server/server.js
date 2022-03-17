@@ -29,7 +29,8 @@ io.on('connection', (socket)=> {
         //io.to(roomName).emit("Print", "Play recieved");        
         moves[rooms[socket.id]].push([index,bigIndex]);
         moves[rooms[socket.id]][0] = moves[rooms[socket.id]][0] + 1;
-        socket.broadcast.emit("Print",moves[rooms[socket.id]][0])
+        socket.broadcast.emit("Print",moves[rooms[socket.id]][moves[rooms[socket.id]][0]][0]);        
+        socket.broadcast.emit("Print",moves[rooms[socket.id]][moves[rooms[socket.id]][0]][1]);
         });
         socket.on("newGame", function(data) {
             
