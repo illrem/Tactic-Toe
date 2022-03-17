@@ -27,7 +27,7 @@ io.on('connection', (socket)=> {
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
         //io.to(roomName).emit("Print", "Play recieved");
-        socket.broadcast.emit("Print",moves[rooms[socket.id]][0])
+        socket.broadcast.emit("Print",moves[rooms[socket.id]][1])
         });
         socket.on("newGame", function(data) {
             
@@ -36,7 +36,8 @@ io.on('connection', (socket)=> {
             roomno++;
             let roomName = roomno.toString();
             rooms[socket.id] = roomName;
-            moves[roomName].push(1);
+            moves[roomName] = [1, "move 1"];
+            moves[roomName].pop();
             //socket.join(roomName);
 
             //await 
