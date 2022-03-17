@@ -26,7 +26,9 @@ io.on('connection', (socket)=> {
            //moves[rooms[socket.id][]].size+1
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
-        //io.to(roomName).emit("Print", "Play recieved");
+        //io.to(roomName).emit("Print", "Play recieved");        
+        moves[rooms[socket.id]].push([index,bigIndex]);
+        moves[rooms[socket.id]][0] = moves[rooms[socket.id]][0] + 1;
         socket.broadcast.emit("Print",moves[rooms[socket.id]][0])
         });
         socket.on("newGame", function(data) {
