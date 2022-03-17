@@ -376,9 +376,10 @@ export default {
 
     socket.on("spectator",(data) => {
       this.specator = true;
-      for (let i = 1; i <= data[0]; i++){
+      console.log(data[0]);
+      /*for (let i = 1; i <= data[0]; i++){
           this.draw(data[i][0],data[i][1]);
-      }
+      }*/
     });
 
     socket.on("Print", function(data){
