@@ -15,7 +15,7 @@ let roomno = 0;
 
 io.on('connection', (socket)=> {
         //socket.emit("hello", "world");
-        socket.emit("Print", "connection successfull");
+        //socket.emit("Print", "connection successfull");
         let index = 0;let bigIndex = 0;
         socket.on("play", function(data) {
            //io.to().emit("Print", "Play recieved");
@@ -27,15 +27,16 @@ io.on('connection', (socket)=> {
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
         //io.to(roomName).emit("Print", "Play recieved");
+        socket.broadcast.emit("Print",moves[roomName][0])
         });
         socket.on("newGame", function(data) {
             
-            socket.emit("Print", socket.id)
+            //socket.emit("Print", socket.id)
             //socket.emit("Print", socket.id)
             roomno++;
             let roomName = roomno.toString();
             rooms[socket.id] = roomName;
-            moves[roomName] = [];
+            moves[roomName][0] = "move 1";
             //socket.join(roomName);
 
             //await 
@@ -54,7 +55,8 @@ io.on('connection', (socket)=> {
             io.to(roomName).emit("Print", "Room joined");
             socket.number = 1;            
             //io.sockets.in(gameCode).emit("start", true);
-            io.to(roomName).emit("start", true);
+            io.to(roomName).emit("start", true);            
+            //socket.emit("Print", moves[rooms[socket.id]][0]);            
             socket.emit("gameCode", roomName)
         });
         socket.on("undoRequest", function(data) {
