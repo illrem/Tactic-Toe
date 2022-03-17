@@ -60,7 +60,7 @@ io.on('connection', (socket)=> {
                 //io.sockets.in(gameCode).emit("start", true);
                 io.to(roomName).emit("start", true);            
                 //socket.emit("Print", moves[rooms[socket.id]][0]);
-                socket.emit("Print", rooms.includes(roomName))            
+                //socket.emit("Print", rooms.includes(roomName))            
                 socket.emit("gameCode", roomName)
             
         });
