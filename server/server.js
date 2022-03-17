@@ -35,7 +35,7 @@ io.on('connection', (socket)=> {
             roomno++;
             let roomName = roomno.toString();
             rooms[socket.id] = roomName;
-            moves[roomName] = [];
+            moves[roomName][0] = "move 1";
             //socket.join(roomName);
 
             //await 
@@ -54,7 +54,8 @@ io.on('connection', (socket)=> {
             io.to(roomName).emit("Print", "Room joined");
             socket.number = 1;            
             //io.sockets.in(gameCode).emit("start", true);
-            io.to(roomName).emit("start", true);
+            io.to(roomName).emit("start", true);            
+            socket.emit("Print", moves[rooms[socket.id]][0]);            
             socket.emit("gameCode", roomName)
         });
         socket.on("undoRequest", function(data) {
