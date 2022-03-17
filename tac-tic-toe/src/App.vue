@@ -20,7 +20,7 @@
   <div v-bind:class="{hidden:!local}">
     <h1>TacTic Toe</h1>
     <div class="game">
-      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
+      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
         <div class="miniBoard">    
           <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
@@ -477,6 +477,11 @@ h2 {
 .occupied:hover {
   background: #ff3a3a;
 }
+
+.canMove  {
+  background: #dbf0dc;
+}
+
 
 .lastMove {
   background: #89CFF0;
