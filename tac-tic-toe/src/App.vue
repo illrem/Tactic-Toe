@@ -137,9 +137,9 @@ export default {
       {
         return//add null noise
       }
-      if (this.online){
-        console.log(index);
-        console.log(bigIndex);
+      if (this.online && !this.spectator){
+        //console.log(index);
+        //console.log(bigIndex);
         socket.emit("play", { bigIndex:bigIndex, index:index});
       }
     },
@@ -376,6 +376,7 @@ export default {
     });
 
     socket.on("spectator",(data) => {
+      this.onlineStart= true;
       this.specator = true;
       console.log(data[0]);
       for (let i = 1; i <= data[0]-1; i++){
