@@ -70,6 +70,10 @@ io.on('connection', (socket)=> {
                     //socket.emit("Print", rooms.includes(roomName))            
                     socket.emit("gameCode", roomName)
                 }
+                else 
+                {
+                    socket.emit("Print", "spectator")
+                }
         });
         socket.on("undoRequest", function(data) {
             io.to(rooms[socket.id]).emit("undoRequest");
