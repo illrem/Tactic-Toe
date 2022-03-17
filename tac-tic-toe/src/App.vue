@@ -124,8 +124,8 @@ export default {
         
         //socket.emit("play", { bigIndex:bigIndex, index:index});
       }
-      console.log(index);
-      console.log(bigIndex);      
+      //console.log(index);
+      //console.log(bigIndex);      
       console.log("current move: " + this.currentMove);
       this.draw(bigIndex, index);
     },
