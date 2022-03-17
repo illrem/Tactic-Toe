@@ -325,11 +325,14 @@ export default {
     //this.onlineStart = true;
   },
   setOnlineJoin(){
-    this.canGo = false;
     var code = document.getElementById("code").value;
-    socket.emit("joinGame", code);   
-    console.log("sent join request: " + code); 
-    //this.onlineStart = true;
+    if (code != "")
+    {
+      this.canGo = false;
+      socket.emit("joinGame", code);   
+      console.log("sent join request: " + code); 
+      //this.onlineStart = true;
+    }
   },
   setGameCode(gc){
     this.gameCode = gc;
