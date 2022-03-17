@@ -37,10 +37,10 @@
 
   <div v-bind:class="{hidden:!online || !onlineStart}">
     <h1>TacTic Toe</h1>    
-    <p v-if="spectator">you are a specator</p>
+    <h1 v-if="spectator">you are a spectator</h1>
     <p>Turn Time: {{ countDown }} seconds remaining!</p>    
     <div class="game">
-      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
+      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
         <div class="miniBoard">    
           <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
@@ -377,7 +377,7 @@ export default {
 
     socket.on("spectator",(data) => {
       this.onlineStart= true;
-      this.specator = true;
+      this.spectator = true;
       console.log(data[0]);
       for (let i = 1; i <= data[0]-1; i++){
           console.log("spectating move: "+data[i][0]+data[i][1]);
