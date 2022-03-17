@@ -222,6 +222,8 @@ export default {
         //this.currentMove--;
       }
     },
+      //setTimeout(myTimeout1, 2000) 
+      //if not complete
       //if reaches 20 set winner
       //send out winner emit
     countDownTimer() {
