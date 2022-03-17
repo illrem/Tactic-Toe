@@ -109,6 +109,8 @@ export default {
       sentUndo:false,
       recievedUndo: false,
 
+      spectator:false,
+
       gameCode: null,
       onlineStart: false,
       countDown: 20
@@ -370,6 +372,13 @@ export default {
 
     socket.on("win",(data) => {
       this.setWin(data);
+    });
+
+    socket.on("spectator",(data) => {
+      this.specator = true;
+      for (let i = 1; i <= data[0]; i++){
+          this.draw(data[i][0],data[i][1]);
+      }
     });
 
     socket.on("Print", function(data){

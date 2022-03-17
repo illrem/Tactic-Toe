@@ -70,9 +70,10 @@ io.on('connection', (socket)=> {
                     //socket.emit("Print", rooms.includes(roomName))            
                     socket.emit("gameCode", roomName)
                 }
-                else 
+                else if (roomMembers[roomName] > 1)
                 {
-                    socket.emit("Print", "spectator")
+                    socket.join(roomName);
+                    socket.emit("spectator", moves[roomName])
                 }
         });
         socket.on("undoRequest", function(data) {
