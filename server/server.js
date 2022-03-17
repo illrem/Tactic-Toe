@@ -28,7 +28,7 @@ io.on('connection', (socket)=> {
         //socket.broadcast.emit("play", {bigIndex:bigIndex, index:index})
         io.to(rooms[socket.id]).emit("play", {bigIndex:bigIndex, index:index});        
         //io.to(roomName).emit("Print", "Play recieved");        
-        moves[rooms[socket.id]].push([index,bigIndex]);
+        moves[rooms[socket.id]].push([bigIndex, index]);
         //socket.broadcast.emit("Print",moves[rooms[socket.id]][0]);
         //socket.broadcast.emit("Print",moves[rooms[socket.id]][moves[rooms[socket.id]][0]][0]);        
         //socket.broadcast.emit("Print",moves[rooms[socket.id]][moves[rooms[socket.id]][0]][1]);        
