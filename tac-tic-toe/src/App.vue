@@ -37,6 +37,7 @@
 
   <div v-bind:class="{hidden:!online || !onlineStart}">
     <h1>TacTic Toe</h1>    
+    <p v-if="spectator">you are a specator</p>
     <p>Turn Time: {{ countDown }} seconds remaining!</p>    
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1]}">    
@@ -377,7 +378,7 @@ export default {
     socket.on("spectator",(data) => {
       this.specator = true;
       console.log(data[0]);
-      for (let i = 1; i <= data[0]; i++){
+      for (let i = 1; i <= data[0]-1; i++){
           console.log("spectating move: "+data[i][0]+data[i][1]);
           this.draw(data[i][0],data[i][1]);
       }
