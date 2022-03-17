@@ -51,17 +51,18 @@ io.on('connection', (socket)=> {
         socket.on("joinGame", function(data) {            
             //socket.emit("Print", "join request recieved: " + data)
             let roomName = data.toString();
-            if (rooms.includes(roomName))
-            {
+            
+            
                 rooms[socket.id] = roomName;            
                 socket.join(roomName);
                 io.to(roomName).emit("Print", "Room joined");
                 socket.number = 1;            
                 //io.sockets.in(gameCode).emit("start", true);
                 io.to(roomName).emit("start", true);            
-                //socket.emit("Print", moves[rooms[socket.id]][0]);            
+                //socket.emit("Print", moves[rooms[socket.id]][0]);
+                socket.emit("Print", rooms.includes(roomName))            
                 socket.emit("gameCode", roomName)
-            }
+            
         });
         socket.on("undoRequest", function(data) {
             io.to(rooms[socket.id]).emit("undoRequest");
