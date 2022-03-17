@@ -40,7 +40,7 @@
     <h1 v-if="spectator">you are a spectator</h1>
     <p>Turn Time: {{ countDown }} seconds remaining!</p>    
     <div class="game">
-      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
+      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]&&canGo}">    
         <div class="miniBoard">    
           <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
