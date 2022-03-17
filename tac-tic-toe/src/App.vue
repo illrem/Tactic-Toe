@@ -344,7 +344,7 @@ export default {
     socket.on("play",(data) => {
       //console.log("Play ", data.bigIndex);
       //console.log("Play ", data.index);
-      console.log("Play");
+      //console.log("Play");
       this.draw(data.bigIndex, data.index);
     });      
 
