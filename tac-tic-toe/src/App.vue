@@ -1,12 +1,12 @@
 
 <template>
 <div class="container">
-  <div   v-bind:class="{hidden:local||online}"> 
+  <div   v-bind:class="{hidden:local||online||puzzles}"> 
     <h2 > Welcome to TacticToe </h2>
-    <button @click="setLocal" >Local</button>
+    <button @click="setLocal()" >Local</button>
     <button @click="setOnline()" >Online</button>    
     
-    <button @click="resetBoard()" >Puzzles(coming soon)</button>
+    <button @click="setPuzzle()" >Puzzles</button>
     <button @click="resetBoard()" >tutorial(coming soon)</button>
   </div>
   <div v-bind:class="{hidden:!online || onlineStart}">  
@@ -15,6 +15,11 @@
     <input type="text" id="code">
     <button @click="setOnlineJoin()" >join game</button>    
     <button @click="revokeOnline()" >Back</button>
+  </div>
+
+  <div v-bind:class="{hidden:!puzzles || puzzleSelected}">  
+    <h1> Choose a puzzle</h1>
+    <button >puzzle 1</button>
   </div>
 
   <div v-bind:class="{hidden:!local}">
@@ -50,6 +55,23 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>    
     <button @click="sendOnlineUndoRequest()" v-if="!sentUndo && !recievedUndo" >UNDO</button><button @click="acceptUndoRequest()" v-if="!sentUndo && recievedUndo" >Accept UNDO</button>
+    <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
+    <h2 v-if="tie"> Tie Game </h2>
+  </div>
+
+<div v-bind:class="{hidden:!puzzles||!puzzleSelected}">
+    <h1>TacTic Toe</h1>
+    <div class="game">
+      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
+        <div class="miniBoard">    
+          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
+        </div>  
+        <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
+      </div>    
+    </div>
+    <h1 v-if="xturn">X's Turn</h1>
+    <h1 v-if="!xturn">O's Turn</h1>
+    <button @click="undo()" >UNDO</button>
     <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
@@ -111,6 +133,9 @@ export default {
       recievedUndo: false,
 
       spectator:false,
+      puzzles:false,
+      puzzleSelected:false,
+      puzzleMovesRemaining:0,
 
       gameCode: null,
       onlineStart: false,
@@ -126,6 +151,16 @@ export default {
       if (this.online){
         
         //socket.emit("play", { bigIndex:bigIndex, index:index});
+      }
+      console.log(index);
+      console.log(bigIndex);      
+      console.log("current move: " + this.currentMove);
+      this.draw(bigIndex, index);
+    },
+    puzzlePlay(bigIndex, index){
+      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex])
+      {
+        return//add null noise
       }
       //console.log(index);
       //console.log(bigIndex);      
@@ -169,7 +204,10 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]];
       this.lastMove[bigIndex][index] = true;
+      if (!this.spectator)
+      {
       this.canGo = !this.canGo;
+      }
       this.moves[++this.currentMove] = {bigIndex:bigIndex, index:index, squareWon:squareWon};
       this.countDown = 20;
     },
@@ -314,6 +352,18 @@ export default {
   },
   setLocal(){
     this.local=true;
+  },
+  setPuzzle(){
+    this.puzzles=true;
+    //loadPuzzle(Puzzlenumber);
+  },
+  loadPuzzle(){
+/*
+    for (let i = 1; i <= data[0]-1; i++){
+          //console.log("adding move: "+data[i][0]+data[i][1]);
+          this.draw(data[i][0],data[i][1]);
+      }
+      */
   },
   setOnline(){   
     console.log("online") 
