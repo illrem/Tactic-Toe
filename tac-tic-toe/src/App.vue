@@ -261,7 +261,7 @@ export default {
             for (let j = 0; j <= 8; j++){
               this.allowed[j]=false;
             }
-          this.allowed[this.moves[this.currentMove-1].bigIndex]=true; 
+          this.allowed[this.moves[this.currentMove-1].index]=true; 
         }
         else {
           for (let j = 0; j <= 8; j++){
