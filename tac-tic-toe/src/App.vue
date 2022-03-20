@@ -19,7 +19,7 @@
 
   <div v-bind:class="{hidden:!puzzles || puzzleSelected}">  
     <h1> Choose a puzzle</h1>
-    <button>puzzle 1</button>    
+    <button @click="selectPuzzle()">puzzle 1</button>    
   </div>
 
   <div v-bind:class="{hidden:!local}">
@@ -65,14 +65,14 @@
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
         <div class="miniBoard">    
-          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
+          <div @click="puzzlePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
         <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
       </div>    
     </div>
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
-    <button @click="undo()" >UNDO</button>
+    <button @click="puzzleUndo()" >UNDO</button>
     <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
@@ -148,6 +148,7 @@ export default {
       puzzles:false,
       puzzleSelected:false,
       puzzleMovesRemaining:0,
+      puzzleMoves:0,
 
       gameCode: null,
       onlineStart: false,
@@ -174,10 +175,16 @@ export default {
       {
         return//add null noise
       }
-      //console.log(index);
-      //console.log(bigIndex);      
-      console.log("current move: " + this.currentMove);
+      //if (this.online){
+        
+        //socket.emit("play", { bigIndex:bigIndex, index:index});
+      //}
+      //console.log("BigIndex: "+bigIndex);
+      //console.log("Index: "+index);      
+      //console.log("current move: " + this.currentMove);
+      this.puzzleMovesRemaining--;
       this.draw(bigIndex, index);
+      this.processPuzzle();
     },
     onlinePlay(bigIndex, index){
       if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || !this.canGo)
@@ -234,7 +241,13 @@ export default {
     acceptUndoRequest(){
       socket.emit("acceptUndoRequest");
     },
-
+    puzzleUndo(){
+        if(this.puzzleMovesRemaining < this.puzzleMoves)
+        {
+          this.puzzleMovesRemaining++;
+          this.undo();
+        }
+    },
     undo(){
       this.recievedUndo = false;           
       this.sentUndo = false;
@@ -424,15 +437,25 @@ export default {
   },
   setPuzzle(){
     this.puzzles=true;
-    //loadPuzzle(Puzzlenumber);
+  },
+  selectPuzzle(){
+    this.puzzleSelected=true;    
+    this.loadPuzzle();
   },
   loadPuzzle(){
-/*
-    for (let i = 1; i <= data[0]-1; i++){
+    
+    this.puzzleMoves = 3;
+    this.puzzleMovesRemaining = 3;
+    var movelog = [[ 4,  4],[ 4,  8],[ 8,  1],[ 1,  4],[ 4,  6],[ 6,  3],[ 3,  3],[ 3,  7],[ 7,  2],[ 2,  7],[ 7,  6],[ 6,  1],[ 1,  7],[ 7,  1],[ 1,  8],[ 8,  3],[ 3,  4],[ 4,  5],[ 5,  5],[ 5,  7],[ 7,  4],[ 4,  3],[ 3,  0],[ 0,  4],[ 4,  1],[ 1,  6],[ 6,  0],[ 0,  8],[ 8,  4],[ 4,  2],[ 2,  4],[ 4,  7],[ 7,  5],[ 5,  8],[ 8,  0],[ 0,  5],[ 5,  4],[ 4,  0],[ 0,  7],[ 7,  8],[ 8,  5],[ 5,  2],[ 2,  1],[ 1,  3],[ 3,  6],[ 6,  8],[ 8,  8],[ 8,  2],[ 2,  2],[ 2,  3],[ 3,  8][ 8,  6],[ 6,  7],[ 7,  7],[ 7,  3],[ 3,  5],[ 5,  0],[ 0,  3],[ 3,  1],[ 1,  5],[ 5,  3],[ 3,  2],[ 2,  6]];
+       for (let i = 0; i <= movelog.length; i++){
           //console.log("adding move: "+data[i][0]+data[i][1]);
-          this.draw(data[i][0],data[i][1]);
+          this.draw(movelog[i][0],movelog[i][1]);
       }
-      */
+      
+      
+  },
+  processPuzzle(){
+    //if the person does not win in the set amount of moves, reset them
   },
   writeToFile(){
     for (let i = 0; i < this.moves.length; i++)
