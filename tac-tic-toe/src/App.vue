@@ -272,6 +272,26 @@ export default {
           this.lastMove[this.moves[this.currentMove].bigIndex][this.moves[this.currentMove].index] = true; 
         }      
         this.canGo = !this.canGo;
+
+        for (let j = 0; j <= 8; j++){
+          for (let i = 0; i <= 8; i++){
+            if (this.impossible[j][i])
+            {
+              this.occupied[j][i]=false;
+            }
+          }
+        }
+
+        this.impossible = [[false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]];
+        this.calculatePossible();
         //this.currentMove--;
       }
     },
