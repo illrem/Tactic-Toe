@@ -19,7 +19,7 @@
 
   <div v-bind:class="{hidden:!puzzles || puzzleSelected}">  
     <h1> Choose a puzzle</h1>
-    <button >puzzle 1</button>
+    <button>puzzle 1</button>    
   </div>
 
   <div v-bind:class="{hidden:!local}">
@@ -27,7 +27,7 @@
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
         <div class="miniBoard">    
-          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
+          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1], impossible:impossible[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
         <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
       </div>    
@@ -35,6 +35,7 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
     <button @click="undo()" >UNDO</button>
+    <button @click="writeToFile()">write array button</button>
     <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
@@ -47,7 +48,7 @@
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]&&canGo}">    
         <div class="miniBoard">    
-          <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
+          <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1], impossible:impossible[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
         <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
       </div>    
@@ -111,6 +112,16 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]],
 
+      impossible:[[false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]],
+
       lastMove: [[false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
@@ -121,6 +132,7 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]],
       allowed:[true,true,true,true,true,true,true,true,true],
+      full:[true,true,true,true,true,true,true,true,true],
       xturn: true,
       canGo: true,
       complete: false,
@@ -148,13 +160,13 @@ export default {
       {
         return//add null noise
       }
-      if (this.online){
+      //if (this.online){
         
         //socket.emit("play", { bigIndex:bigIndex, index:index});
-      }
-      console.log(index);
-      console.log(bigIndex);      
-      console.log("current move: " + this.currentMove);
+      //}
+      //console.log("BigIndex: "+bigIndex);
+      //console.log("Index: "+index);      
+      //console.log("current move: " + this.currentMove);
       this.draw(bigIndex, index);
     },
     puzzlePlay(bigIndex, index){
@@ -188,7 +200,7 @@ export default {
       this.xturn = !this.xturn
       let squareWon = this.calculateWin([bigIndex]);
       this.calculateTie();
-
+      this.calculatePossible();
       //must move to selected miniboard
       for (let j = 0; j <= 8; j++){
         this.allowed[j]=false;
@@ -245,18 +257,18 @@ export default {
                   [false,false,false,false,false,false,false,false,false],
                   [false,false,false,false,false,false,false,false,false],
                   [false,false,false,false,false,false,false,false,false]];
-        if (--this.currentMove > 1){
+        if (this.currentMove > 1){
             for (let j = 0; j <= 8; j++){
               this.allowed[j]=false;
             }
-          this.allowed[this.moves[this.currentMove].bigIndex]=true; 
+          this.allowed[this.moves[this.currentMove-1].bigIndex]=true; 
         }
         else {
           for (let j = 0; j <= 8; j++){
               this.allowed[j]=true;
             }
         }    
-        if (this.currentMove > 0){
+        if (--this.currentMove > 0){
           this.lastMove[this.moves[this.currentMove].bigIndex][this.moves[this.currentMove].index] = true; 
         }      
         this.canGo = !this.canGo;
@@ -328,6 +340,30 @@ export default {
     //console.log(WIN_CONDITIONS);
     return false;
   },
+  calculatePossible()
+  {
+    var possible;
+    for (let j = 0; j <= 8; j++){
+      possible = false;
+      for (let i = 0; i <= 8; i++){
+        
+          if (this.occupied[j][i] == false)
+          {
+            possible = true;
+          }
+      }
+      if (possible == false)
+      {
+        for (let i = 0; i <= 8; i++){
+          if (this.occupied[i][j] == false)
+          {
+            this.occupied[i][j] = true;
+            this.impossible[i][j] = true;
+          }
+      }
+      }
+    }
+  },
   resetBoard() {
     for (let i = 0; i <= 8; i++){
       for (let j = 0; j <= 8; j++){
@@ -364,6 +400,12 @@ export default {
           this.draw(data[i][0],data[i][1]);
       }
       */
+  },
+  writeToFile(){
+    for (let i = 0; i < this.moves.length; i++)
+    {      
+    console.log(this.moves[i]);
+    }
   },
   setOnline(){   
     console.log("online") 
@@ -530,6 +572,10 @@ h2 {
 
 .canMove  {
   background: #dbf0dc;
+}
+
+.impossible {
+  background: #393e3e;
 }
 
 
