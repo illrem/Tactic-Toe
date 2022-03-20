@@ -363,16 +363,29 @@ export default {
   calculatePossible()
   {
     var possible;
+    var same =  false;
     for (let j = 0; j <= 8; j++){
       possible = false;
+      same =  false;
       for (let i = 0; i <= 8; i++){
-        
           if (this.occupied[j][i] == false)
           {
-            possible = true;
+            if (i!=j)
+            {
+              possible = true;
+            }
+            else
+            {
+              same = true;
+            }
           }
       }
-      if (possible == false)
+      if (!possible && same == true)
+      {
+        this.occupied[j][j] = true;
+        this.impossible[j][j] = true;
+      }
+      if (!possible)
       {
         for (let i = 0; i <= 8; i++){
           if (this.occupied[i][j] == false)
