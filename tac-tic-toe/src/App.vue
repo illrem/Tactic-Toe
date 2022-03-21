@@ -19,7 +19,8 @@
 
   <div v-bind:class="{hidden:!puzzles || puzzleSelected}">  
     <h1> Choose a puzzle</h1>
-    <button @click="selectPuzzle()">puzzle 1</button>    
+    <button @click="selectPuzzle()">puzzle 1</button> 
+    <button @click="revokePuzzle()" >Back</button>   
   </div>
 
   <div v-bind:class="{hidden:!local}">
@@ -61,7 +62,7 @@
   </div>
 
 <div v-bind:class="{hidden:!puzzles||!puzzleSelected}">
-    <h1>TacTic Toe</h1>
+    <h1>Moves remaining: {{puzzleMovesRemaining}}</h1>
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
         <div class="miniBoard">    
@@ -73,7 +74,7 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
     <button @click="puzzleUndo()" >UNDO</button>
-    <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
+    <button id="winner" v-if="complete" @click="homePuzzle()"> Winner</button>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
   </div>
@@ -156,6 +157,76 @@ export default {
       }
   },
   methods: {
+    home(){
+      this.local=false;this.online=false;
+
+      this.board= [["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""],
+              ["","","","","","","","",""]];
+
+      this.occupied= [[false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]];
+
+      this.impossible=[[false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]];
+
+      this.lastMove= [[false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false],
+                [false,false,false,false,false,false,false,false,false]];
+      this.allowed=[true,true,true,true,true,true,true,true,true];
+      this.full=[true,true,true,true,true,true,true,true,true];
+      this.xturn= true;
+      this.canGo= true;
+      this.complete= false;
+      this.winner= null;
+      this.tie= false;
+
+      this.moves= [];
+      this.currentMove= 0;
+      this.sentUndo=false;
+      this.recievedUndo= false;
+
+      this.spectator=false;
+      this.puzzles=false;
+      this.puzzleSelected=false;
+      this.puzzleMovesRemaining=0;
+      this.puzzleMoves=0;
+
+      this.gameCode= null;
+      this.onlineStart= false;
+      this.countDown= 20;
+    },
+    homePuzzle(){
+      this.home();
+      this.setPuzzle();
+    },
     play(bigIndex, index){
       if (this.occupied[bigIndex][index] || !this.allowed[bigIndex])
       {
@@ -171,7 +242,7 @@ export default {
       this.draw(bigIndex, index);
     },
     puzzlePlay(bigIndex, index){
-      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex])
+      if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || this.puzzleMovesRemaining < 1)
       {
         return//add null noise
       }
@@ -375,6 +446,10 @@ export default {
   },
   calculatePossible()
   {
+    if (this.puzzles == true)
+    {
+      return
+    }
     var possible;
     var same =  false;
     for (let j = 0; j <= 8; j++){
@@ -438,23 +513,27 @@ export default {
   setPuzzle(){
     this.puzzles=true;
   },
+  revokePuzzle(){
+    this.puzzles=false;
+  },
   selectPuzzle(){
     this.puzzleSelected=true;    
     this.loadPuzzle();
   },
   loadPuzzle(){
     
-    this.puzzleMoves = 3;
-    this.puzzleMovesRemaining = 3;
-    var movelog = [[ 4,  4],[ 4,  8],[ 8,  1],[ 1,  4],[ 4,  6],[ 6,  3],[ 3,  3],[ 3,  7],[ 7,  2],[ 2,  7],[ 7,  6],[ 6,  1],[ 1,  7],[ 7,  1],[ 1,  8],[ 8,  3],[ 3,  4],[ 4,  5],[ 5,  5],[ 5,  7],[ 7,  4],[ 4,  3],[ 3,  0],[ 0,  4],[ 4,  1],[ 1,  6],[ 6,  0],[ 0,  8],[ 8,  4],[ 4,  2],[ 2,  4],[ 4,  7],[ 7,  5],[ 5,  8],[ 8,  0],[ 0,  5],[ 5,  4],[ 4,  0],[ 0,  7],[ 7,  8],[ 8,  5],[ 5,  2],[ 2,  1],[ 1,  3],[ 3,  6],[ 6,  8],[ 8,  8],[ 8,  2],[ 2,  2],[ 2,  3],[ 3,  8][ 8,  6],[ 6,  7],[ 7,  7],[ 7,  3],[ 3,  5],[ 5,  0],[ 0,  3],[ 3,  1],[ 1,  5],[ 5,  3],[ 3,  2],[ 2,  6]];
-       for (let i = 0; i <= movelog.length; i++){
-          //console.log("adding move: "+data[i][0]+data[i][1]);
-          this.draw(movelog[i][0],movelog[i][1]);
+    this.puzzleMoves = 6;
+    this.puzzleMovesRemaining = 6;
+    var movelog = [[4,4],[4,0],[0,8],[8,1],[1,5],[5,7],[7,3],[3,6],[6,3],[3,4],[4,1],[1,2],[2,4],[4,7],[7,5],[5,4],[4,2],[2,1],[1,3],[3,2],[2,0],[0,0],[0,2],[2,8],[8,6],[6,2],[2,2],[2,6],[6,6],[6,8],[8,3],[3,3],[3,8],[8,4],[4,3],[3,0],[0,3],[3,5],[5,2],[2,5],[5,8],[8,0],[0,5],[5,1],[1,4],[4,6],[6,0],[0,7],[7,7],[7,0],[0,6],[6,5],[5,3],[3,7],[7,2],[2,3],[3,1],[1,8],[8,5],[5,5],[5,6],[6,1],[1,7],[7,1],[1,6],[6,7],[7,6],[6,4],[4,5],[5,0],[0,1],[1,0],[0,4],[4,8],[8,2],[2,7],[7,8]];
+     for (let i = 0; i <= movelog.length; i++){
+        //console.log("adding move: "+data[i][0]+data[i][1]);
+        this.draw(movelog[i][0],movelog[i][1]);
       }
       
       
   },
   processPuzzle(){
+
     //if the person does not win in the set amount of moves, reset them
   },
   writeToFile(){
