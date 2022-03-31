@@ -19,7 +19,7 @@
 
   <div v-bind:class="{hidden:!puzzles || puzzleSelected}">  
     <h1> Choose a puzzle</h1>
-    <button @click="selectPuzzle()">puzzle 1</button> 
+    <button @click="loadPuzzle('1')">puzzle 1</button> 
     <button @click="revokePuzzle()" >Back</button>   
   </div>
 
@@ -62,7 +62,7 @@
   </div>
 
 <div v-bind:class="{hidden:!puzzles||!puzzleSelected}">
-    <h1>Moves remaining: {{puzzleMovesRemaining}}</h1>
+    <h3>Moves remaining: {{puzzleMovesRemaining}}</h3>
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
         <div class="miniBoard">    
@@ -75,8 +75,6 @@
     <h1 v-if="!xturn">O's Turn</h1>
     <button @click="puzzleUndo()" >UNDO</button>
     <button id="winner" v-if="complete" @click="homePuzzle()"> Winner</button>
-    <h2 v-if="tie"> Tie Game </h2>
-    <button @click="resetBoard()" v-if="complete || tie">RESET</button>
   </div>
 
 </div>
@@ -150,6 +148,8 @@ export default {
       puzzleSelected:false,
       puzzleMovesRemaining:0,
       puzzleMoves:0,
+
+      tutorial:false,
 
       gameCode: null,
       onlineStart: false,
@@ -516,19 +516,21 @@ export default {
   revokePuzzle(){
     this.puzzles=false;
   },
-  selectPuzzle(){
-    this.puzzleSelected=true;    
-    this.loadPuzzle();
-  },
-  loadPuzzle(){
+  
+  loadPuzzle(puzzleNum){
     
+    this.puzzleSelected=true;
+    if (puzzleNum == '1')
+    {      
     this.puzzleMoves = 6;
     this.puzzleMovesRemaining = 6;
-    var movelog = [[4,4],[4,0],[0,8],[8,1],[1,5],[5,7],[7,3],[3,6],[6,3],[3,4],[4,1],[1,2],[2,4],[4,7],[7,5],[5,4],[4,2],[2,1],[1,3],[3,2],[2,0],[0,0],[0,2],[2,8],[8,6],[6,2],[2,2],[2,6],[6,6],[6,8],[8,3],[3,3],[3,8],[8,4],[4,3],[3,0],[0,3],[3,5],[5,2],[2,5],[5,8],[8,0],[0,5],[5,1],[1,4],[4,6],[6,0],[0,7],[7,7],[7,0],[0,6],[6,5],[5,3],[3,7],[7,2],[2,3],[3,1],[1,8],[8,5],[5,5],[5,6],[6,1],[1,7],[7,1],[1,6],[6,7],[7,6],[6,4],[4,5],[5,0],[0,1],[1,0],[0,4],[4,8],[8,2],[2,7],[7,8]];
+    var movelog = [[4,4],[4,0],[0,8],[8,1],[1,5],[5,7],[7,3],[3,6],[6,3],[3,4],[4,1],[1,2],[2,4],[4,7],[7,5],[5,4],[4,2],[2,1],[1,3],[3,2],[2,0],[0,0],[0,2],[2,8],[8,6],[6,2],[2,2],[2,6],[6,6],[6,8],[8,3],[3,3],[3,8],[8,4],[4,3],[3,0],[0,3],[3,5],[5,2],[2,5],[5,8],[8,0],[0,5],[5,1],[1,4],[4,6],[6,0],[0,7],[7,7],[7,0],[0,6],[6,5],[5,3],[3,7],[7,2],[2,3],[3,1],[1,8],[8,5],[5,5],[5,6],[6,1],[1,7],[7,1],[1,6],[6,7],[7,6],[6,4],[4,5],[5,0],[0,1],[1,0],[0,4],[4,8],[8,2],[2,7]];
+    }
      for (let i = 0; i <= movelog.length; i++){
         //console.log("adding move: "+data[i][0]+data[i][1]);
         this.draw(movelog[i][0],movelog[i][1]);
       }
+        
       
       
   },
@@ -567,7 +569,8 @@ export default {
   },
   setGameCode(gc){
     this.gameCode = gc;
-  }
+  },
+  
 },
   created() {
     //if (this.online == true){
