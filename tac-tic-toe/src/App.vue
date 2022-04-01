@@ -74,7 +74,15 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
     <button @click="puzzleUndo()" >UNDO</button>
-    <button id="winner" v-if="complete" @click="homePuzzle()"> Winner</button>
+
+    <div v-if="complete" class="win">
+      <ul class="winMenu">
+        <li class="winTitle"> Winner</li>
+        <li class="winButton" @click="homePuzzle()"> Home</li>
+        <li class="winButton" @click="homePuzzle()"> View Board</li>
+      </ul>
+    </div>
+
   </div>
 
 </div>
@@ -724,6 +732,67 @@ h2 {
 
 .win {
   background: #0ff30f;
+  display:flex;
+  align-items: center;
+  position: fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  padding: 100px;
+  z-index: 4;
+  transition: 0.3s;
+  opacity: 1;
+}
+
+.winMenu {
+  margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.winButtons{
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+}
+
+.winButton{
+  position: relative;
+  display: inline-flex;
+  font-weight: bold;
+  font-size: 5rem;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.winTitle{
+  position: relative;
+  display: inline-flex;
+  font-weight: bold;
+  font-size: 7rem;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.winButton:after{
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 0;
+  height: 5px;
+  display: inline-flex;
+  background: #fff;
+  transition: 0.3s;
+}
+
+.winButton:hover:after{
+  width: 100%;
 }
 
 .win:hover {
@@ -784,6 +853,8 @@ button:hover {
 .hidden{
   display:none;
 }
+
+
 
 @media only screen and (max-width: 600px) {
 
