@@ -33,7 +33,8 @@
   </div>
 
   <div v-bind:class="{hidden:!local}">
-    <h1>TacTic Toe</h1>
+    <h1 v-if="!complete">TacTic Toe</h1>
+    <h2 id="winner" v-if="complete">Winner is {{winner}} </h2>
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
         <div class="miniBoard">    
@@ -51,9 +52,17 @@
         Save Game
       </button>
     </div>
-    <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
+    <button id="winner" v-if="!complete && viewBoard" @click="home()">Home</button>
+    <div v-if="complete" class="win">
+      <ul class="winMenu">
+        <li class="winTitle">Winner is {{winner}}</li>
+        <li class="winButton" @click="home()"> Home</li>
+        <li class="winButton" @click="setViewBoardTrue()"> View Board</li>
+      </ul>
+    </div>
+
   </div>
 
   <div v-bind:class="{hidden:!online || !onlineStart}">
@@ -71,7 +80,14 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>    
     <button @click="sendOnlineUndoRequest()" v-if="!sentUndo && !recievedUndo" >UNDO</button><button @click="acceptUndoRequest()" v-if="!sentUndo && recievedUndo" >Accept UNDO</button>
-    <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
+    <button id="winner" v-if="!complete && viewBoard" @click="home()">Home</button>
+    <div v-if="complete" class="win">
+      <ul class="winMenu">
+        <li class="winTitle">Winner is {{winner}}</li>
+        <li class="winButton" @click="home()"> Home</li>
+        <li class="winButton" @click="setViewBoardTrue()"> View Board</li>
+      </ul>
+    </div>
     <h2 v-if="tie"> Tie Game </h2>
   </div>
 
@@ -184,8 +200,8 @@ export default {
   },
   methods: {
     home(){
-      this.local=false;this.online=false;
-
+      this.local=false;this.online=false;      
+      this.setViewBoardFalse();
       this.board= [["","","","","","","","",""],
               ["","","","","","","","",""],
               ["","","","","","","","",""],
@@ -250,7 +266,6 @@ export default {
       this.countDown= 20;
     },
     homePuzzle(){
-      this.setViewBoardFalse();
       this.home();
       this.setPuzzle();
     },
