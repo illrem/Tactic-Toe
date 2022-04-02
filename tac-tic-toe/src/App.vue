@@ -10,11 +10,14 @@
     <button @click="resetBoard()" >tutorial(coming soon)</button>
   </div>
   <div v-bind:class="{hidden:!online || onlineStart}">  
-    <h1> Code: {{gameCode}}</h1>
-    <button @click="setOnlineNew()" >new game</button>
-    <input type="text" id="code">
-    <button @click="setOnlineJoin()" >join game</button>    
-    <button @click="revokeOnline()" >Back</button>
+    <h1 v-bind:class="{hidden:!host || join}"> Code: {{gameCode}}</h1>
+    <button v-bind:class="{hidden:host || join}" @click="setOnlineNew()" >new game</button>    
+    <button v-bind:class="{hidden:host || join}" @click="setJoin()" >join game</button>
+    <input v-bind:class="{hidden:host || !join}" type="text" id="code">
+    <button v-bind:class="{hidden:host || !join}" @click="setOnlineJoin()" >join game</button>    
+    <button v-bind:class="{hidden:host || join}" @click="revokeOnline()" >Back</button>
+    <button v-bind:class="{hidden:!host || join}" @click="revokeHost()" >Back</button>
+    <button v-bind:class="{hidden:host || !join}" @click="revokeJoin()" >Back</button>
   </div>
 
   <div v-bind:class="{hidden:!puzzles || puzzleSelected || userPuzzle}">  
@@ -187,6 +190,9 @@ export default {
       puzzleMovesRemaining:0,
       puzzleMoves:0,
 
+      host:false,
+      join:false,
+
       tutorial:false,
 
       gameCode: null,
@@ -200,8 +206,8 @@ export default {
   },
   methods: {
     home(){
-      this.local=false;this.online=false;      
-      this.setViewBoardFalse();
+      this.local=false;this.online=false;   
+      this.setViewBoardFalse();this.revokeOnline();this.revokeHost();this.revokeJoin();
       this.board= [["","","","","","","","",""],
               ["","","","","","","","",""],
               ["","","","","","","","",""],
@@ -635,10 +641,23 @@ export default {
     console.log("online") 
     this.online=true;
   },
+  setHost(){
+    this.host =true;
+  },
+  revokeHost(){
+    this.host =false;
+  },
+  setJoin(){
+    this.join =true;
+  },
+  revokeJoin(){
+    this.join =false;
+  },
   revokeOnline(){    
     this.online=false;
   },
   setOnlineNew(){
+    this.setHost();
     socket.emit("newGame"); 
     console.log("Newgame");
     this.canGo = true; 
