@@ -59,16 +59,18 @@ io.on('connection', (socket)=> {
             
                 if (roomMembers[roomName] == 1)
                 {
-                    roomMembers[roomName] = 2;
-                    rooms[socket.id] = roomName;            
-                    socket.join(roomName);
-                    io.to(roomName).emit("Print", "Room joined");
-                    socket.number = 1;            
-                    //io.sockets.in(gameCode).emit("start", true);
-                    io.to(roomName).emit("start", true);            
-                    //socket.emit("Print", moves[rooms[socket.id]][0]);
-                    //socket.emit("Print", rooms.includes(roomName))            
-                    socket.emit("gameCode", roomName)
+                    if(rooms[socket.id] != roomName){//check player is not joining own lobby
+                        roomMembers[roomName] = 2;
+                        rooms[socket.id] = roomName;            
+                        socket.join(roomName);
+                        io.to(roomName).emit("Print", "Room joined");
+                        socket.number = 1;            
+                        //io.sockets.in(gameCode).emit("start", true);
+                        io.to(roomName).emit("start", true);            
+                        //socket.emit("Print", moves[rooms[socket.id]][0]);
+                        //socket.emit("Print", rooms.includes(roomName))            
+                        socket.emit("gameCode", roomName)
+                    }
                 }
                 else if (roomMembers[roomName] > 1)
                 {
