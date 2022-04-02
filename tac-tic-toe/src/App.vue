@@ -662,7 +662,8 @@ export default {
     this.online=false;
   },
   emitTimer(){
-    socket.emit("timer", document.getElementById("myCheck").checked);
+    socket.emit("timer", document.getElementById("Timer").checked);
+    console.log("timer value emitted: "+document.getElementById("Timer").checked)
   },
   setOnlineNew(){
     this.setHost();
@@ -711,6 +712,7 @@ export default {
 
     socket.on("start",(data) => {
       this.onlineStart = data.start; 
+      console.log("data.timer = "+data.timer)
       if(data.timer){    
         this.countDownTimer();
       }
