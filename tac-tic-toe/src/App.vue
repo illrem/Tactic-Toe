@@ -17,10 +17,19 @@
     <button @click="revokeOnline()" >Back</button>
   </div>
 
-  <div v-bind:class="{hidden:!puzzles || puzzleSelected}">  
+  <div v-bind:class="{hidden:!puzzles || puzzleSelected || userPuzzle}">  
     <h1> Choose a puzzle</h1>
-    <button @click="loadPuzzle('1')">puzzle 1</button> 
+    <button @click="loadPuzzle('1')">Puzzle 1</button>
+    <button @click="activateCustomPuzzle()">Custom Puzzle</button> 
     <button @click="revokePuzzle()" >Back</button>   
+  </div>
+
+  <div v-bind:class="{hidden:!userPuzzle}">  
+    <h1>Enter puzzle code</h1>
+    <input type="text" id="puzzleCode">
+    <h1>Enter number of moves allowed</h1>
+    <input type="text" id="puzzleMoves">
+    <button @click="customPuzzle()" >Start</button> 
   </div>
 
   <div v-bind:class="{hidden:!local}">
@@ -36,7 +45,12 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
     <button @click="undo()" >UNDO</button>
-    <button @click="writeToFile()">write array button</button>
+
+    <div class="tooltip">
+      <button @click="writeToFile()"><span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
+        Save Game
+      </button>
+    </div>
     <h2 id="winner" v-if="complete"> Winner is {{winner}} </h2>
     <h2 v-if="tie"> Tie Game </h2>
     <button @click="resetBoard()" v-if="complete || tie">RESET</button>
@@ -73,13 +87,13 @@
     </div>
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
-    <button @click="puzzleUndo()" >UNDO</button>
-
+    <button @click="puzzleUndo()" v-if="!viewBoard">UNDO</button>
+    <button id="winner" v-if="!complete && viewBoard" @click="homePuzzle()">Home</button>
     <div v-if="complete" class="win">
       <ul class="winMenu">
         <li class="winTitle"> Winner</li>
         <li class="winButton" @click="homePuzzle()"> Home</li>
-        <li class="winButton" @click="homePuzzle()"> View Board</li>
+        <li class="winButton" @click="setViewBoardTrue()"> View Board</li>
       </ul>
     </div>
 
@@ -161,7 +175,11 @@ export default {
 
       gameCode: null,
       onlineStart: false,
-      countDown: 20
+      countDown: 20,
+
+      viewBoard: false,
+
+      userPuzzle: false
       }
   },
   methods: {
@@ -232,6 +250,7 @@ export default {
       this.countDown= 20;
     },
     homePuzzle(){
+      this.setViewBoardFalse();
       this.home();
       this.setPuzzle();
     },
@@ -440,7 +459,8 @@ export default {
         if (bigIndex == 9)
         {
           this.complete = true;
-          this.winner = this.board[bigIndex][first];        
+          this.winner = this.board[bigIndex][first];     
+          this.canGo= false;   
         }
         else{
           this.board[9][bigIndex] = this.board[bigIndex][first];
@@ -530,27 +550,71 @@ export default {
     this.puzzleSelected=true;
     if (puzzleNum == '1')
     {      
-    this.puzzleMoves = 6;
-    this.puzzleMovesRemaining = 6;
+    this.puzzleMoves = 1;
+    this.puzzleMovesRemaining = 1;
     var movelog = [[4,4],[4,0],[0,8],[8,1],[1,5],[5,7],[7,3],[3,6],[6,3],[3,4],[4,1],[1,2],[2,4],[4,7],[7,5],[5,4],[4,2],[2,1],[1,3],[3,2],[2,0],[0,0],[0,2],[2,8],[8,6],[6,2],[2,2],[2,6],[6,6],[6,8],[8,3],[3,3],[3,8],[8,4],[4,3],[3,0],[0,3],[3,5],[5,2],[2,5],[5,8],[8,0],[0,5],[5,1],[1,4],[4,6],[6,0],[0,7],[7,7],[7,0],[0,6],[6,5],[5,3],[3,7],[7,2],[2,3],[3,1],[1,8],[8,5],[5,5],[5,6],[6,1],[1,7],[7,1],[1,6],[6,7],[7,6],[6,4],[4,5],[5,0],[0,1],[1,0],[0,4],[4,8],[8,2],[2,7]];
     }
-     for (let i = 0; i <= movelog.length; i++){
-        //console.log("adding move: "+data[i][0]+data[i][1]);
-        this.draw(movelog[i][0],movelog[i][1]);
-      }
-        
-      
-      
+     this.displayPuzzle(movelog);
   },
+
+  displayPuzzle(moveLog){
+    console.log(moveLog.length);
+    console.log(moveLog[1][1]);
+    for (let i = 0; i <= moveLog.length-1; i++){
+        console.log("adding move");
+        this.draw(moveLog[i][0],moveLog[i][1]);
+      }
+  },
+
   processPuzzle(){
 
     //if the person does not win in the set amount of moves, reset them
   },
-  writeToFile(){
-    for (let i = 0; i < this.moves.length; i++)
-    {      
-    console.log(this.moves[i]);
+  activateCustomPuzzle(){
+    this.userPuzzle = true;
+  },
+  customPuzzle(){
+    let data = document.getElementById("puzzleCode").value;//check this works at all
+    let puzzleMoves = parseInt(document.getElementById("puzzleMoves").value);//check this is an int
+
+    const myArray = data.split(",").map(Number); 
+    console.log('0');
+    console.log(data);
+    console.log(myArray);
+
+    if (myArray.every(function(element) {return typeof element === 'number';})){
+      if(Number.isInteger(puzzleMoves) && (myArray.length % 2 == 0)){
+        console.log('0');
+        this.puzzleMoves = puzzleMoves;
+        this.puzzleMovesRemaining = puzzleMoves;
+        let moveLog = [];
+        for (let i = 0; i <= (myArray.length/2) -1; i++){
+          moveLog[i] = [myArray[i*2],myArray[i*2 + 1]];
+        }       
+        this.puzzleSelected=true;
+        this.userPuzzle = false;
+        console.log(moveLog);
+        this.displayPuzzle(moveLog);
+      }
     }
+        
+  },
+
+  writeToFile(){
+    var output = [];
+    var index; var bigIndex; 
+    for (let i = 0; i < this.moves.length-1; i++)
+    {      
+      bigIndex = this.moves[i+1].bigIndex;      
+      index = this.moves[i+1].index;
+      output[i] = [[bigIndex],[index]];
+      console.log(index);
+      console.log(bigIndex);
+    }
+    navigator.clipboard.writeText(output);
+
+    var tooltip = document.getElementById("myTooltip");
+    tooltip.innerHTML = "Copied"
   },
   setOnline(){   
     console.log("online") 
@@ -577,6 +641,14 @@ export default {
   },
   setGameCode(gc){
     this.gameCode = gc;
+  },
+
+  setViewBoardTrue(){
+    this.complete = false;
+    this.viewBoard = true;
+  },
+  setViewBoardFalse(){
+    this.viewBoard = false;
   },
   
 },
@@ -650,13 +722,10 @@ export default {
 
 h1 {
   font-size: 5rem;
-  margin-bottom: 0.5em;
 }
 
 h2 {
-  margin-top: 1em;
   font-size: 2rem;
-  margin-bottom: 0.5em;
 }
 
 .game {
@@ -704,7 +773,6 @@ h2 {
   font-size: 1rem;
   font-weight: bold;
   border: 3px solid black;
-  transition: background 0.2s ease-in-out;
 }
 
 .miniSquare:hover {
@@ -741,8 +809,9 @@ h2 {
   bottom:0;
   padding: 100px;
   z-index: 4;
-  transition: 0.3s;
+  transition: 1s;
   opacity: 1;
+  transition: background-color 1s linear;
 }
 
 .winMenu {
@@ -767,13 +836,13 @@ h2 {
   font-size: 5rem;
   color: #fff;
   text-decoration: none;
-  text-transform: uppercase;
+  text-transform: uppercase;  
 }
 .winTitle{
   position: relative;
   display: inline-flex;
   font-weight: bold;
-  font-size: 7rem;
+  font-size: 8rem;
   color: #fff;
   text-decoration: none;
   text-transform: uppercase;
@@ -782,7 +851,7 @@ h2 {
 .winButton:after{
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -1px;
   left: 0;
   width: 0;
   height: 5px;
@@ -854,6 +923,43 @@ button:hover {
   display:none;
 }
 
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
 
 
 @media only screen and (max-width: 600px) {
