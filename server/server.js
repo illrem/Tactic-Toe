@@ -67,7 +67,7 @@ io.on('connection', (socket)=> {
                         io.to(roomName).emit("Print", "Room joined");
                         socket.number = 1;            
                         //io.sockets.in(gameCode).emit("start", true);
-                        io.to(roomName).emit("start", true, roomTimer[rooms[socket.id]]);            
+                        io.to(roomName).emit("start", {start:true, timer:roomTimer[rooms[socket.id]]});            
                         //socket.emit("Print", moves[rooms[socket.id]][0]);
                         //socket.emit("Print", rooms.includes(roomName))            
                         socket.emit("gameCode", roomName)

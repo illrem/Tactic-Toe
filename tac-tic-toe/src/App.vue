@@ -11,7 +11,7 @@
   </div>
   <div v-bind:class="{hidden:!online || onlineStart}">  
     <h1 v-bind:class="{hidden:!host || join}"> Code: {{gameCode}}</h1>
-    <input v-bind:class="{hidden:!host || join}" type="checkbox" id="Timer" name="Timer" @click="emitTimer()"><label for="Timer">Timer</label>
+    <input v-bind:class="{hidden:!host || join}" type="checkbox" id="Timer" name="Timer" @click="emitTimer()"><label v-bind:class="{hidden:!host || join}" for="Timer">Timer</label>
     <button v-bind:class="{hidden:host || join}" @click="setOnlineNew()" >new game</button>    
     <button v-bind:class="{hidden:host || join}" @click="setJoin()" >join game</button>
     <input v-bind:class="{hidden:host || !join}" type="text" id="code">
@@ -72,7 +72,7 @@
   <div v-bind:class="{hidden:!online || !onlineStart}">
     <h1>TacTic Toe</h1>    
     <h1 v-if="spectator">you are a spectator</h1>
-    <p>Turn Time: {{ countDown }} seconds remaining!</p>    
+    <p  v-bind:class="{hidden:!timer}">Turn Time: {{ countDown }} seconds remaining!</p>    
     <div class="game">
       <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]&&canGo}">    
         <div class="miniBoard">    
@@ -437,6 +437,7 @@ export default {
       //send out winner emit
     countDownTimer() {
       //console.log("timer")
+      this.timer = true;
       if(this.countDown > 0) {
         setTimeout(() => {
           this.countDown -= 1
@@ -708,10 +709,10 @@ export default {
       console.log("Gamecode returned: ", this.gameCode);
     });
 
-    socket.on("start",(data,Timer) => {
-      this.onlineStart = data; 
-      if(Timer){    
-      this.countDownTimer();
+    socket.on("start",(data) => {
+      this.onlineStart = data.start; 
+      if(data.timer){    
+        this.countDownTimer();
       }
       console.log("start game");
     });
