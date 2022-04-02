@@ -11,6 +11,7 @@
   </div>
   <div v-bind:class="{hidden:!online || onlineStart}">  
     <h1 v-bind:class="{hidden:!host || join}"> Code: {{gameCode}}</h1>
+    <input v-bind:class="{hidden:!host || join}" type="checkbox" id="Timer" name="Timer" @click="emitTimer()"><label for="Timer">Timer</label>
     <button v-bind:class="{hidden:host || join}" @click="setOnlineNew()" >new game</button>    
     <button v-bind:class="{hidden:host || join}" @click="setJoin()" >join game</button>
     <input v-bind:class="{hidden:host || !join}" type="text" id="code">
@@ -44,7 +45,7 @@
           <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1], impossible:impossible[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
         </div>  
         <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
-      </div>    
+      </div>
     </div>
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
@@ -193,6 +194,8 @@ export default {
       host:false,
       join:false,
 
+      timer:false,
+
       tutorial:false,
 
       gameCode: null,
@@ -267,6 +270,7 @@ export default {
       this.puzzleMovesRemaining=0;
       this.puzzleMoves=0;
 
+      this.timer=false;
       this.gameCode= null;
       this.onlineStart= false;
       this.countDown= 20;
@@ -656,6 +660,9 @@ export default {
   revokeOnline(){    
     this.online=false;
   },
+  emitTimer(){
+    socket.emit("timer", document.getElementById("myCheck").checked);
+  },
   setOnlineNew(){
     this.setHost();
     socket.emit("newGame"); 
@@ -701,9 +708,11 @@ export default {
       console.log("Gamecode returned: ", this.gameCode);
     });
 
-    socket.on("start",(data) => {
-      this.onlineStart = data;      
+    socket.on("start",(data,Timer) => {
+      this.onlineStart = data; 
+      if(Timer){    
       this.countDownTimer();
+      }
       console.log("start game");
     });
 

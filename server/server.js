@@ -11,6 +11,7 @@ const { getMoves, addMove } = require('./game.js');
 
 const moves = {};
 const rooms = {};
+const roomTimer = [];
 const roomMembers = {};
 let roomno = 0;
 
@@ -66,7 +67,7 @@ io.on('connection', (socket)=> {
                         io.to(roomName).emit("Print", "Room joined");
                         socket.number = 1;            
                         //io.sockets.in(gameCode).emit("start", true);
-                        io.to(roomName).emit("start", true);            
+                        io.to(roomName).emit("start", true, roomTimer[rooms[socket.id]]);            
                         //socket.emit("Print", moves[rooms[socket.id]][0]);
                         //socket.emit("Print", rooms.includes(roomName))            
                         socket.emit("gameCode", roomName)
@@ -83,7 +84,10 @@ io.on('connection', (socket)=> {
         });
         socket.on("acceptUndoRequest", function(data) {
             io.to(rooms[socket.id]).emit("undo");
-        });
+        });        
+        socket.on("timer", function(data) {
+            roomTimer[rooms[socket.id]] = data;
+        });  
         socket.on("win", function(data) {
             let winner = data;
             io.to(rooms[socket.id]).emit("win", winner);
