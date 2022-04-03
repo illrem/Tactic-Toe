@@ -84,6 +84,11 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>    
     <button @click="sendOnlineUndoRequest()" v-if="!sentUndo && !recievedUndo" >UNDO</button><button @click="acceptUndoRequest()" v-if="!sentUndo && recievedUndo" >Accept UNDO</button>
+    <div v-if="!complete && viewBoard" class="tooltip">
+      <button @click="writeToFile()"><span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
+        Save Game
+      </button>
+    </div>
     <button id="winner" v-if="!complete && viewBoard" @click="home()">Home</button>
     <div v-if="complete" class="win">
       <ul class="winMenu">
