@@ -70,7 +70,8 @@
   </div>
 
   <div v-bind:class="{hidden:!online || !onlineStart}">
-    <h1>TacTic Toe</h1>    
+    <h1 v-if="host">You are X</h1>
+    <h1 v-if="join">You are O</h1>  
     <h1 v-if="spectator">you are a spectator</h1>
     <p  v-bind:class="{hidden:!timer}">Turn Time: {{ countDown }} seconds remaining!</p>    
     <div class="game">
