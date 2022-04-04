@@ -113,7 +113,8 @@
     </div>
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
-    <button @click="puzzleUndo()" v-if="!viewBoard">UNDO</button>
+    <button @click="puzzleUndo()" v-if="!viewBoard">UNDO</button>    
+    <button @click="homePuzzle()" v-if="!viewBoard">HOME</button>
     <button id="winner" v-if="!complete && viewBoard" @click="homePuzzle()">Home</button>
     <div v-if="complete" class="win">
       <ul class="winMenu">
