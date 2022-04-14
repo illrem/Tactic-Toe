@@ -887,7 +887,7 @@ h2 {
   justify-content: center;
   font-size: 1rem;
   font-weight: bold;
-  border: 3px solid black;
+  border: 3px solid #00000069;
 }
 
 .miniSquare:hover {
