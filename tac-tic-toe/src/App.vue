@@ -169,9 +169,21 @@ export default {
   },
   data() {
     return {
-      local:false,online:false,
+      //variables to initilize menu choices
+      local:false, //toggle the game to local mode
+      online:false, //toggle the game to online mode
+      puzzles:false, //toggle the game to puzzle mode
+      puzzleSelected:false,
+      puzzleMovesRemaining:0,
+      puzzleMoves:0,
+      currentPuzzle:0,
+      host:false,
+      join:false,
+      timer:false,
+      tutorial:false,    
+      userPuzzle: false,
 
-      board: [["","","","","","","","",""],
+      board: [["","","","","","","","",""],//Variable to initalize an empty board
               ["","","","","","","","",""],
               ["","","","","","","","",""],
               ["","","","","","","","",""],
@@ -182,7 +194,7 @@ export default {
               ["","","","","","","","",""],
               ["","","","","","","","",""]],
 
-      occupied: [[false,false,false,false,false,false,false,false,false],
+      occupied: [[false,false,false,false,false,false,false,false,false],//displays whether each square contains a piece
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
@@ -192,7 +204,7 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]],
 
-      impossible:[[false,false,false,false,false,false,false,false,false],
+      impossible:[[false,false,false,false,false,false,false,false,false],//displays whether a move is possible or not
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
@@ -202,7 +214,7 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]],
 
-      lastMove: [[false,false,false,false,false,false,false,false,false],
+      lastMove: [[false,false,false,false,false,false,false,false,false],//displays the last move
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
@@ -211,11 +223,11 @@ export default {
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false],
                 [false,false,false,false,false,false,false,false,false]],
-      allowed:[true,true,true,true,true,true,true,true,true],
-      full:[true,true,true,true,true,true,true,true,true],
-      xturn: true,
-      canGo: true,
-      complete: false,
+      allowed:[true,true,true,true,true,true,true,true,true],//displays which boards moves are allowed on
+      full:[true,true,true,true,true,true,true,true,true],//
+      xturn: true,//stores whether or not it is x's turn
+      canGo: true,//stores if the current user can go
+      complete: false,//stores the game end state
       winner: null,
       tie: false,
 
@@ -225,30 +237,17 @@ export default {
       recievedUndo: false,
 
       spectator:false,
-      puzzles:false,
-      puzzleSelected:false,
-      puzzleMovesRemaining:0,
-      puzzleMoves:0,
-      currentPuzzle:0,
-
-      host:false,
-      join:false,
-
-      timer:false,
-
-      tutorial:false,
+      
 
       gameCode: null,
       onlineStart: false,
       countDown: 20,
 
-      viewBoard: false,
-
-      userPuzzle: false
+      viewBoard: false
       }
   },
   methods: {
-    home(){
+    home(){//resets the game board and resets variables to display the home screen
       this.local=false;this.online=false;   
       this.setViewBoardFalse();this.revokeOnline();this.revokeHost();this.revokeJoin();
       this.board= [["","","","","","","","",""],
@@ -315,11 +314,11 @@ export default {
       this.onlineStart= false;
       this.countDown= 20;
     },
-    homePuzzle(){
+    homePuzzle(){//resets game board and returns to puzzle screen
       this.home();
       this.setPuzzle();
     },
-    play(bigIndex, index){
+    play(bigIndex, index){//checks if move is valid then draws it
       if (this.occupied[bigIndex][index] || !this.allowed[bigIndex])
       {
         return//add null noise
@@ -333,7 +332,7 @@ export default {
       //console.log("current move: " + this.currentMove);
       this.draw(bigIndex, index);
     },
-    puzzlePlay(bigIndex, index){
+    puzzlePlay(bigIndex, index){//checks if move is vaid then draws it
       if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || this.puzzleMovesRemaining < 1)
       {
         return//add null noise
@@ -349,7 +348,7 @@ export default {
       this.draw(bigIndex, index);
       this.processPuzzle();
     },
-    onlinePlay(bigIndex, index){
+    onlinePlay(bigIndex, index){//checks if move is valid then sends it to the server
       if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || !this.canGo)
       {
         return//add null noise
@@ -360,7 +359,7 @@ export default {
         socket.emit("play", { bigIndex:bigIndex, index:index});
       }
     },
-    draw(bigIndex, index) {
+    draw(bigIndex, index) {//draw inputed move on the board and adjust variables to reflect
       if(this.xturn) {//if is x's turn mark as x
         this.board[bigIndex][index]="X"
       } else {//if is o's turn mark as o
@@ -368,7 +367,7 @@ export default {
       }
       this.occupied[bigIndex][index]=true
       this.xturn = !this.xturn
-      let squareWon = this.calculateWin([bigIndex]);
+      let squareWon = this.calculateWin([bigIndex]);//check if this move has won a board
       this.calculateTie();
       this.calculatePossible();
       //must move to selected miniboard
@@ -394,24 +393,24 @@ export default {
       this.countDown = 20;
     },
 
-    sendOnlineUndoRequest(){      
+    sendOnlineUndoRequest(){ //send the server an undo message     
       this.sentUndo = true;
       socket.emit("undoRequest");
     },
-    recieveOnlineUndoRequest(){
+    recieveOnlineUndoRequest(){ //display to the player that an undo request has been recieved
       this.recievedUndo = true;
     },
-    acceptUndoRequest(){
+    acceptUndoRequest(){//send the server an accepted undo message
       socket.emit("acceptUndoRequest");
     },
-    puzzleUndo(){
+    puzzleUndo(){//undo moves up to the start of the puzzle
         if(this.puzzleMovesRemaining < this.puzzleMoves)
         {
           this.puzzleMovesRemaining++;
           this.undo();
         }
     },
-    undo(){
+    undo(){//reverse the board and associated variables to the state they were in one move ago
       this.recievedUndo = false;           
       this.sentUndo = false;
       if (this.currentMove > 0)
@@ -475,7 +474,7 @@ export default {
       //if not complete
       //if reaches 20 set winner
       //send out winner emit
-    countDownTimer() {
+    countDownTimer() {//reduce the countdown variable display by one every second
       //console.log("timer")
       this.timer = true;
       if(this.countDown > 0) {
@@ -495,12 +494,12 @@ export default {
       }
     },
 
-    setWin(winner){
+    setWin(winner){//set the winner as the inputed piece
         this.complete = true;
         this.winner = winner;
     },
 
-  calculateWin(bigIndex) {
+  calculateWin(bigIndex) {//check if inputed square contains a win condition
     //console.log(bigIndex);
     if (bigIndex < 9)
     {
@@ -519,17 +518,17 @@ export default {
       let first = WIN_CONDITIONS[i][0];      
       let second = WIN_CONDITIONS[i][1];
       let third = WIN_CONDITIONS[i][2];
-      if(this.board[bigIndex][first]==this.board[bigIndex][second] && this.board[bigIndex][first] == this.board[bigIndex][third] && this.board[bigIndex][first] != "")
+      if(this.board[bigIndex][first]==this.board[bigIndex][second] && this.board[bigIndex][first] == this.board[bigIndex][third] && this.board[bigIndex][first] != "")//if a win condition has been met
       {
         //console.log(bigIndex);
-        if (bigIndex == 9)
+        if (bigIndex == 9)//if there is a win on the big board
         {
           this.complete = true;
           this.winner = this.board[bigIndex][first];     
           this.canGo= false;   
         }
         else{
-          this.board[9][bigIndex] = this.board[bigIndex][first];
+          this.board[9][bigIndex] = this.board[bigIndex][first];//check if winning this board has won the game
           this.calculateWin("9");
           return true;          
         }
@@ -538,7 +537,7 @@ export default {
     //console.log(WIN_CONDITIONS);
     return false;
   },
-  calculatePossible()
+  calculatePossible()//check if there are any deadlock states on the board and black them out
   {
     if (this.puzzles == true)
     {
@@ -579,7 +578,7 @@ export default {
       }
     }
   },
-  resetBoard() {
+  resetBoard() {//reset the board
     for (let i = 0; i <= 8; i++){
       for (let j = 0; j <= 8; j++){
         this.board[i][j] = "";
@@ -591,7 +590,7 @@ export default {
     this.tie = false;
     //console.log("Board Reset")
   },
-  calculateTie() {// go back and move this into calc win to improve effcienecy
+  calculateTie() {//if the board is full and there is no winner it is a tie
     for (let i = 0; i <= 8; i++){
       for (let j = 0; j <= 8; j++){
       if (this.board[i][j] == ""){///////////////////change to
@@ -612,13 +611,13 @@ export default {
   },
   
   nextPuzzle()
-  {
+  {//move to the next puzzle
     console.log(this.currentPuzzle);
     this.homePuzzle();
     this.loadPuzzle(this.currentPuzzle+1);
   },
 
-  loadPuzzle(puzzleNum){
+  loadPuzzle(puzzleNum){//load input puzzle into the display
     
     this.puzzleSelected=true;
     var movelog = [];
@@ -660,7 +659,7 @@ export default {
      this.displayPuzzle(movelog);
   },
 
-  displayPuzzle(moveLog){
+  displayPuzzle(moveLog){//input array of moves into the draw function
     console.log(moveLog.length);
     console.log(moveLog[1][1]);
     for (let i = 0; i <= moveLog.length-1; i++){
@@ -669,14 +668,10 @@ export default {
       }
   },
 
-  processPuzzle(){
-
-    //if the person does not win in the set amount of moves, reset them
-  },
   activateCustomPuzzle(){
     this.userPuzzle = true;
   },
-  customPuzzle(){
+  customPuzzle(){//process input puzzle into an array and pass it to display
     let data = document.getElementById("puzzleCode").value;//check this works at all
     let puzzleMoves = parseInt(document.getElementById("puzzleMoves").value);//check this is an int
 
@@ -700,7 +695,7 @@ export default {
         
   },
 
-  writeToFile(){
+  writeToFile(){ //output current moves to a string in the users clipboard
     var output = [];
     var index; var bigIndex; 
     for (let i = 0; i < this.moves.length-1; i++)
@@ -735,18 +730,18 @@ export default {
   revokeOnline(){    
     this.online=false;
   },
-  emitTimer(){
+  emitTimer(){// tell server whether or not to include timer in game
     socket.emit("timer", document.getElementById("Timer").checked);
     console.log("timer value emitted: "+document.getElementById("Timer").checked)
   },
-  setOnlineNew(){
+  setOnlineNew(){// tell server user is hosting game
     this.setHost();
     socket.emit("newGame"); 
     console.log("Newgame");
     this.canGo = true; 
     //this.onlineStart = true;
   },
-  setOnlineJoin(){
+  setOnlineJoin(){ // send request to join game to server
     var code = document.getElementById("code").value;
     if (code != "")
     {
@@ -771,20 +766,20 @@ export default {
 },
   created() {
     //if (this.online == true){
-    socket.on("play",(data) => {
+    socket.on("play",(data) => {//when a play is recieved draw it
       //console.log("Play ", data.bigIndex);
       //console.log("Play ", data.index);
       //console.log("Play");
       this.draw(data.bigIndex, data.index);
     });      
 
-    socket.on("gameCode", (data) => {
+    socket.on("gameCode", (data) => {// when given a gamecode is recieved display it
       this.gameCode = data;
       this.setGameCode(this.gameCode);
       console.log("Gamecode returned: ", this.gameCode);
     });
 
-    socket.on("start",(data) => {
+    socket.on("start",(data) => {// when recieved start the game
       this.onlineStart = data.start; 
       console.log("data.timer = "+data.timer)
       if(data.timer){    
@@ -793,19 +788,19 @@ export default {
       console.log("start game");
     });
 
-    socket.on("undoRequest",() => {
+    socket.on("undoRequest",() => { // when recieved display to user they have recieved an undo request
       this.recieveOnlineUndoRequest();
     });
 
-    socket.on("undo",() => {
+    socket.on("undo",() => { // when recieved call undo
       this.undo();
     });
 
-    socket.on("win",(data) => {
+    socket.on("win",(data) => { //when recieved set winner
       this.setWin(data);
     });
 
-    socket.on("spectator",(data) => {
+    socket.on("spectator",(data) => { //when recieved set user to spectator mode
       this.onlineStart= true;
       this.spectator = true;
       console.log(data[0]);
