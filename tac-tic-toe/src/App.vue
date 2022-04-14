@@ -52,6 +52,8 @@
     <button @click="loadPuzzle(25)">Puzzle 25</button>
     <button @click="loadPuzzle(26)">Puzzle 26</button>
     <button @click="loadPuzzle(27)">Puzzle 27</button>
+    <button @click="loadPuzzle(28)">Puzzle 28</button>
+    <button @click="loadPuzzle(29)">Puzzle 29</button>
     <br> <br>
     <button @click="activateCustomPuzzle()">Custom Puzzle</button> 
     <button @click="revokePuzzle()" >Back</button>   
@@ -148,7 +150,7 @@
     <div v-if="complete" class="win">
       <ul class="winMenu">
         <li class="winTitle"> Winner</li>
-        <li v-if="currentPuzzle !== 27" class="winButton" @click="nextPuzzle()"> Next Puzzle</li>
+        <li v-if="currentPuzzle !== 29" class="winButton" @click="nextPuzzle()"> Next Puzzle</li>
         <li class="winButton" @click="homePuzzle()"> Home</li>
         <li class="winButton" @click="setViewBoardTrue()"> View Board</li>
       </ul>
@@ -647,6 +649,8 @@ export default {
     else if (puzzleNum == 25){this.puzzleMoves = 3; this.puzzleMovesRemaining = 3; movelog = [[3,7],[7,1],[1,1],[1,8],[8,7],[7,7],[7,4],[4,0],[0,0],[0,4],[4,6],[6,3],[3,3],[3,4],[4,4],[4,8],[8,2],[2,0],[0,7],[7,5],[5,6],[6,4],[4,2],[2,4],[4,3],[3,6],[6,5],[5,2],[2,8],[8,8],[8,0],[0,3],[3,2],[2,2],[2,7],[7,6],[6,8],[8,6],[6,0],[0,5],[5,7],[7,8],[8,1],[1,4],[4,1],[1,0],[0,6],[6,1],[1,3]];}
     else if (puzzleNum == 26){this.puzzleMoves = 2; this.puzzleMovesRemaining = 2; movelog = [[1,6],[6,3],[3,5],[5,0],[0,1],[1,2],[2,6],[6,5],[5,8],[8,3],[3,3],[3,4],[4,4],[4,6],[6,4],[4,7],[7,7],[7,0],[0,4],[4,8],[8,8],[8,2],[2,4],[4,0],[0,7],[7,4],[4,2],[2,2],[2,7],[7,8],[8,6],[6,0],[0,8],[8,7],[7,6],[6,6],[6,1],[1,5],[5,5],[5,2]];}
     else if (puzzleNum == 27){this.puzzleMoves = 2; this.puzzleMovesRemaining = 2; movelog = [[4,6],[6,6],[6,2],[2,3],[3,7],[7,4],[4,4],[4,2],[2,8],[8,0],[0,0],[0,7],[7,7],[7,2],[2,4],[4,7],[7,6],[6,5],[5,0],[0,6],[6,3],[3,4],[4,8],[8,3],[3,8],[8,6],[6,0],[0,8],[8,5],[5,6],[6,1],[1,7],[7,8],[8,2],[2,6],[6,7],[7,1],[1,4],[4,0]];}
+    else if (puzzleNum == 28){this.puzzleMoves = 2; this.puzzleMovesRemaining = 2; movelog = [[7,1],[1,0],[0,8],[8,6],[6,6],[6,7],[7,4],[4,3],[3,3],[3,4],[4,4],[4,8],[8,4],[4,6],[6,4],[4,0],[0,6],[6,2],[2,6],[6,3],[3,6],[6,5],[5,2],[2,4],[4,2],[2,7],[7,7],[7,2],[2,1],[1,4],[4,5],[5,3],[3,0],[0,7],[7,0],[0,4],[4,1],[1,8],[8,8],[8,0],[0,0],[0,1],[1,2],[2,5],[5,4],[4,7],[7,5],[5,6]];}
+    else if (puzzleNum == 29){this.puzzleMoves = 2; this.puzzleMovesRemaining = 2; movelog = [[3,3],[3,7],[7,4],[4,0],[0,6],[6,4],[4,4],[4,6],[6,1],[1,4],[4,3],[3,4],[4,5],[5,8],[8,8],[8,0],[0,4],[4,2],[2,2],[2,6],[6,2],[2,3],[3,1],[1,7],[7,7],[7,1],[1,1],[1,8],[8,4],[4,1],[1,0],[0,2],[2,0],[0,1],[1,2],[2,1],[1,6],[6,0],[0,8],[8,1],[1,5],[5,4],[4,8],[8,2],[2,4],[4,7],[7,2],[2,8],[8,6],[6,8],[8,3],[3,8],[8,5],[5,0],[0,7],[7,3],[3,0],[0,3],[3,6],[6,7],[7,8]];}
 
 
 
