@@ -1,13 +1,21 @@
-
 <template>
 <div class="container">
+  <Transition name="modal">
+    <img v-if="tutorial" @click="showTutorial2()" src="./assets/Tactictoe1.jpg"/>      
+  </Transition>
+    <Transition name="modal">
+      <img v-if="tutorial2" @click="showTutorial3()" src="./assets/Tactictoe2.jpg"/>  
+        </Transition>
+        <Transition name="modal">  
+    <img v-if="tutorial3" @click="hideTutorial()" src="./assets/Tactictoe3.jpg"/> 
+      </Transition>
   <div   v-bind:class="{hidden:local||online||puzzles}"> 
     <h2 > Welcome to TacticToe </h2>
     <button @click="setLocal()" >Local</button>
     <button @click="setOnline()" >Online</button>    
     
     <button @click="setPuzzle()" >Puzzles</button>
-    <button @click="resetBoard()" >tutorial(coming soon)</button>
+    <button @click="showTutorial()" >Tutorial</button>
   </div>
   <div v-bind:class="{hidden:!online || onlineStart}">  
     <h1 v-bind:class="{hidden:!host || join}"> Code: {{gameCode}}</h1>
@@ -81,7 +89,7 @@
     </div>
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
-    <button @click="undo()" >UNDO</button>
+    <button @click="undo()" >UNDO</button><button @click="showTutorial()" >Tutorial</button>
 
     <div class="tooltip">
       <button @click="writeToFile()"><span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
@@ -117,6 +125,7 @@
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>    
     <button @click="sendOnlineUndoRequest()" v-if="!sentUndo && !recievedUndo" >UNDO</button><button @click="acceptUndoRequest()" v-if="!sentUndo && recievedUndo" >Accept UNDO</button>
+    <button @click="showTutorial()" >Tutorial</button>
     <div v-if="!complete && viewBoard" class="tooltip">
       <button @click="writeToFile()"><span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
         Save Game
@@ -145,7 +154,7 @@
     </div>
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
-    <button @click="puzzleUndo()" v-if="!viewBoard">UNDO</button>    
+    <button @click="puzzleUndo()" v-if="!viewBoard">UNDO</button><button @click="showTutorial()" >Tutorial</button>    
     <button @click="homePuzzle()" v-if="!viewBoard">HOME</button>
     <button id="winner" v-if="!complete && viewBoard" @click="homePuzzle()">Home</button>
     <div v-if="complete" class="win">
@@ -181,7 +190,9 @@ export default {
       host:false,
       join:false,
       timer:false,
-      tutorial:false,    
+      tutorial:false, 
+      tutorial2:false,
+      tutorial3:false,   
       userPuzzle: false,
 
       board: [["","","","","","","","",""],//Variable to initalize an empty board
@@ -713,6 +724,27 @@ export default {
     var tooltip = document.getElementById("myTooltip");
     tooltip.innerHTML = "Copied"
   },
+  showTutorial()
+  {
+    this.tutorial = true;  
+  },
+  showTutorial2()
+  {
+    this.tutorial = false; 
+    this.tutorial2=true; 
+  },
+  showTutorial3()
+  {
+    this.tutorial2 = false; 
+    this.tutorial3 = true; 
+  },
+  hideTutorial()
+  {
+    this.tutorial = false; 
+    this.tutorial2=false;
+    this.tutorial3=false;
+  },
+  
   setOnline(){   
     console.log("online") 
     this.online=true;
@@ -815,8 +847,11 @@ export default {
     socket.on("Print", function(data){
       console.log(data);
     })
+    
   }
   //}
+  
+  
 
   }
 </script>
