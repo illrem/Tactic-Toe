@@ -172,7 +172,7 @@
 </template>
 <script>
 import io from 'socket.io-client'
-const socket = io("https://serene-citadel-00320.herokuapp.com/")
+const socket = io(process.env.VUE_APP_SOCKET_URL || 'http://localhost:3000')
 export default {
   name: 'App',
   components: {
