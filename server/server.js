@@ -1,7 +1,11 @@
 const server = require('http').createServer()
+const allowedOrigins = [
+    process.env.CLIENT_ORIGIN,
+    "http://localhost:8080"
+].filter(Boolean)
 const io = require('socket.io')(server, {
     cors: {
-        origin: process.env.CLIENT_ORIGIN || "https://tactictoe.co",
+        origin: allowedOrigins,
         methods: ["GET", "POST"]
     }
 });
