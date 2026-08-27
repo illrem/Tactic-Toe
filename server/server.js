@@ -1,17 +1,17 @@
+const { Server } = require('socket.io');
+const { useAzureSocketIO } = require('@azure/web-pubsub-socket.io');
+
 const server = require('http').createServer()
 const allowedOrigins = [
     process.env.CLIENT_ORIGIN,
     "http://localhost:8080"
 ].filter(Boolean)
-const io = require('socket.io')(server, {
+const io = new Server(server, {
     cors: {
         origin: allowedOrigins,
         methods: ["GET", "POST"]
     }
 });
-
-const { getMoves, addMove } = require('./game.js');
-//const { makeid } = require('./utils.js');
 
 const moves = {};
 const rooms = {};
@@ -20,7 +20,6 @@ const roomMembers = {};
 let roomno = 0;
 
 io.on('connection', (socket)=> {
-        //socket.emit("hello", "world");
         //socket.emit("Print", "connection successfull");
         let index = 0;let bigIndex = 0;
         socket.on("play", function(data) {
@@ -96,8 +95,27 @@ io.on('connection', (socket)=> {
             let winner = data;
             io.to(rooms[socket.id]).emit("win", winner);
         })
+        socket.on("disconnect", function() {
+            // free per-room state so memory doesn't grow unbounded (important on low-memory tiers)
+            const roomName = rooms[socket.id];
+            if (roomName) {
+                delete moves[roomName];
+                delete roomMembers[roomName];
+                delete roomTimer[roomName];
+            }
+            delete rooms[socket.id];
+        });
 })
 
-server.listen(process.env.PORT || 3000,() => {
-    console.log('listening on *:3000');
+// negotiate/connect through Web PubSub instead of holding sockets directly, so the process can scale to zero
+useAzureSocketIO(io, {
+    hub: process.env.WEB_PUBSUB_HUB || 'Hub1',
+    connectionString: process.env.WEB_PUBSUB_CONNECTION_STRING
+}).then(() => {
+    server.listen(process.env.PORT || 3000, () => {
+        console.log('listening on *:3000');
+    });
+}).catch((err) => {
+    console.error('Failed to connect to Azure Web PubSub for Socket.IO', err);
+    process.exit(1);
 });
