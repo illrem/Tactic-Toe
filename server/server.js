@@ -2,16 +2,28 @@ const { Server } = require('socket.io');
 const { useAzureSocketIO } = require('@azure/web-pubsub-socket.io');
 
 const server = require('http').createServer()
+
 const allowedOrigins = [
     process.env.CLIENT_ORIGIN,
     "http://localhost:8080"
 ].filter(Boolean)
+console.log("CLIENT_ORIGIN env:", process.env.CLIENT_ORIGIN);
+console.log("allowedOrigins:", allowedOrigins);
+
 const io = new Server(server, {
     cors: {
-        origin: allowedOrigins,
-        methods: ["GET", "POST"]
-    }
+        origin: (origin, callback) => {
+            console.log("Socket.IO CORS check - origin:", origin);
+            // Allow all origins (adapter will handle secure routing)
+            callback(null, true);
+        },
+        methods: ["GET", "POST"],
+        credentials: false,
+        allowEIO3: true
+    },
+    transports: ['websocket', 'polling']
 });
+console.log("Socket.IO CORS config applied with wildcard");
 
 const moves = {};
 const rooms = {};
@@ -113,7 +125,7 @@ useAzureSocketIO(io, {
     connectionString: process.env.WEB_PUBSUB_CONNECTION_STRING
 }).then(() => {
     server.listen(process.env.PORT || 3000, () => {
-        console.log('listening on *:3000');
+        console.log('listening on *:3000 (with Azure Web PubSub adapter)');
     });
 }).catch((err) => {
     console.error('Failed to connect to Azure Web PubSub for Socket.IO', err);
