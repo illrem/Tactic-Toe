@@ -1,13 +1,13 @@
 <template>
 <div class="container">
   <Transition name="modal">
-    <img v-if="tutorial" @click="showTutorial2()" src="./assets/Tactictoe1.jpg"/>      
+    <img v-if="tutorialStep === 1" @click="showTutorial2()" src="./assets/Tactictoe1.jpg"/>      
   </Transition>
     <Transition name="modal">
-      <img v-if="tutorial2" @click="showTutorial3()" src="./assets/Tactictoe2.jpg"/>  
+      <img v-if="tutorialStep === 2" @click="showTutorial3()" src="./assets/Tactictoe2.jpg"/>  
         </Transition>
         <Transition name="modal">  
-    <img v-if="tutorial3" @click="hideTutorial()" src="./assets/Tactictoe3.jpg"/> 
+    <img v-if="tutorialStep === 3" @click="hideTutorial()" src="./assets/Tactictoe3.jpg"/> 
       </Transition>
   <div   v-bind:class="{hidden:local||online||puzzles}"> 
     <h2 > Welcome to TacticToe </h2>
@@ -19,10 +19,10 @@
   </div>
   <div v-bind:class="{hidden:!online || onlineStart}">  
     <h1 v-bind:class="{hidden:!host || join}"> Code: {{gameCode}}</h1>
-    <input v-bind:class="{hidden:!host || join}" type="checkbox" id="Timer" name="Timer" @click="emitTimer()"><label v-bind:class="{hidden:!host || join}" for="Timer">Timer</label>
+    <input v-bind:class="{hidden:!host || join}" type="checkbox" id="Timer" name="Timer" v-model="timerEnabled" @change="emitTimer()"><label v-bind:class="{hidden:!host || join}" for="Timer">Timer</label>
     <button v-bind:class="{hidden:host || join}" @click="setOnlineNew()" >new game</button>    
     <button v-bind:class="{hidden:host || join}" @click="setJoin()" >join game</button>
-    <input v-bind:class="{hidden:host || !join}" type="text" id="code">
+    <input v-bind:class="{hidden:host || !join}" type="text" id="code" v-model="joinCode">
     <button v-bind:class="{hidden:host || !join}" @click="setOnlineJoin()" >join game</button>    
     <button v-bind:class="{hidden:host || join}" @click="revokeOnline()" >Back</button>
     <button v-bind:class="{hidden:!host || join}" @click="revokeHost()" >Back</button>
@@ -31,62 +31,26 @@
 
   <div v-bind:class="{hidden:!puzzles || puzzleSelected || userPuzzle}">  
     <h1> Choose a puzzle</h1>
-    <button @click="loadPuzzle(1)">Puzzle 01</button>
-    <button @click="loadPuzzle(2)">Puzzle 02</button>
-    <button @click="loadPuzzle(3)">Puzzle 03</button>
-    <button @click="loadPuzzle(4)">Puzzle 04</button>
-    <button @click="loadPuzzle(5)">Puzzle 05</button>
-    <button @click="loadPuzzle(6)">Puzzle 06</button>    
-    <button @click="loadPuzzle(7)">Puzzle 07</button>
-    <button @click="loadPuzzle(8)">Puzzle 08</button>
-    <button @click="loadPuzzle(9)">Puzzle 09</button>
-    <button @click="loadPuzzle(10)">Puzzle 10</button>
-    <br> <br>
-    <button @click="loadPuzzle(11)">Puzzle 11</button>
-    <button @click="loadPuzzle(12)">Puzzle 12</button>
-    <button @click="loadPuzzle(13)">Puzzle 13</button>
-    <button @click="loadPuzzle(14)">Puzzle 14</button>
-    <button @click="loadPuzzle(15)">Puzzle 15</button>    
-    <button @click="loadPuzzle(16)">Puzzle 16</button>
-    <button @click="loadPuzzle(17)">Puzzle 17</button>
-    <button @click="loadPuzzle(18)">Puzzle 18</button>
-    <button @click="loadPuzzle(19)">Puzzle 19</button>
-    <button @click="loadPuzzle(20)">Puzzle 20</button>
-    <br> <br>
-    <button @click="loadPuzzle(21)">Puzzle 21</button>
-    <button @click="loadPuzzle(22)">Puzzle 22</button>
-    <button @click="loadPuzzle(23)">Puzzle 23</button>
-    <button @click="loadPuzzle(24)">Puzzle 24</button>
-    <button @click="loadPuzzle(25)">Puzzle 25</button>
-    <button @click="loadPuzzle(26)">Puzzle 26</button>
-    <button @click="loadPuzzle(27)">Puzzle 27</button>
-    <button @click="loadPuzzle(28)">Puzzle 28</button>
-    <button @click="loadPuzzle(29)">Puzzle 29</button>
-    <button @click="loadPuzzle(30)">Puzzle 30</button>
-    <br> <br>
+    <button v-for="puzzleNumber in puzzleNumbers" :key="puzzleNumber" @click="loadPuzzle(puzzleNumber)">
+      Puzzle {{ String(puzzleNumber).padStart(2, '0') }}
+    </button>
+    <br><br>
     <button @click="activateCustomPuzzle()">Custom Puzzle</button> 
     <button @click="revokePuzzle()" >Back</button>   
   </div>
 
   <div v-bind:class="{hidden:!userPuzzle}">  
     <h1>Enter puzzle code</h1>
-    <input type="text" id="puzzleCode">
+    <input type="text" id="puzzleCode" v-model="puzzleCode">
     <h1>Enter number of moves allowed</h1>
-    <input type="text" id="puzzleMoves">
+    <input type="text" id="puzzleMoves" v-model="puzzleMovesInput">
     <button @click="customPuzzle()" >Start</button> 
   </div>
 
   <div v-bind:class="{hidden:!local}">
     <h1 v-if="!complete">TacTic Toe</h1>
     <h2 id="winner" v-if="complete">Winner is {{winner}} </h2>
-    <div class="game">
-      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
-        <div class="miniBoard">    
-          <div @click="play(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1], impossible:impossible[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
-        </div>  
-        <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
-      </div>
-    </div>
+    <Board :board="board" :occupied="occupied" :impossible="impossible" :last-move="lastMove" :allowed="allowed" @move="play" />
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
     <button @click="undo()" >UNDO</button><button @click="showTutorial()" >Tutorial</button>
@@ -114,14 +78,7 @@
     <h1 v-if="join">You are O</h1>  
     <h1 v-if="spectator">you are a spectator</h1>
     <p  v-bind:class="{hidden:!timer}">Turn Time: {{ countDown }} seconds remaining!</p>    
-    <div class="game">
-      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]&&canGo}">    
-        <div class="miniBoard">    
-          <div @click="onlinePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1], impossible:impossible[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
-        </div>  
-        <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
-      </div>    
-    </div>
+    <Board :board="board" :occupied="occupied" :impossible="impossible" :last-move="lastMove" :allowed="allowed" :can-move="canGo" @move="onlinePlay" />
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>    
     <button @click="sendOnlineUndoRequest()" v-if="!sentUndo && !recievedUndo" >UNDO</button><button @click="acceptUndoRequest()" v-if="!sentUndo && recievedUndo" >Accept UNDO</button>
@@ -144,14 +101,7 @@
 
 <div v-bind:class="{hidden:!puzzles||!puzzleSelected}">
     <h3>Moves remaining: {{puzzleMovesRemaining}}</h3>
-    <div class="game">
-      <div v-for="bigIndex in 9" v-bind:key="bigIndex" :id="'square_' + (bigIndex-1)" class="square" v-bind:class="{occupied:!allowed[bigIndex-1],canMove:allowed[bigIndex-1]}">    
-        <div class="miniBoard">    
-          <div @click="puzzlePlay(bigIndex-1, index-1)" v-for="index in 9" v-bind:key="index"  :id="'square_' + (index-1)" class='miniSquare' v-bind:class="{occupied:occupied[bigIndex-1][index-1], lastMove:lastMove[bigIndex-1][index-1]}"  >{{board[bigIndex-1][index-1]}}</div>
-        </div>  
-        <div class="bigBoard squareOverlay">{{board[9][bigIndex-1]}}</div>
-      </div>    
-    </div>
+    <Board :board="board" :occupied="occupied" :impossible="impossible" :last-move="lastMove" :allowed="allowed" @move="puzzlePlay" />
     <h1 v-if="xturn">X's Turn</h1>
     <h1 v-if="!xturn">O's Turn</h1>
     <button @click="puzzleUndo()" v-if="!viewBoard">UNDO</button><button @click="showTutorial()" >Tutorial</button>    
@@ -172,10 +122,22 @@
 </template>
 <script>
 import io from 'socket.io-client'
+import Board from './components/Board.vue'
+const BOARD_COUNT = 9
+const PUZZLE_NUMBERS = Array.from({ length: 30 }, (_, index) => index + 1)
+const createBoard = () => Array.from({ length: 10 }, () => Array(BOARD_COUNT).fill(''))
+const createFlags = () => Array.from({ length: BOARD_COUNT }, () => Array(BOARD_COUNT).fill(false))
+const createAllowed = () => Array(BOARD_COUNT).fill(true)
+const WIN_CONDITIONS = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6]
+]
 const socket = io(process.env.VUE_APP_SOCKET_URL || 'http://localhost:3000')
 export default {
   name: 'App',
   components: {
+    Board
   },
   data() {
     return {
@@ -184,59 +146,25 @@ export default {
       online:false, //toggle the game to online mode
       puzzles:false, //toggle the game to puzzle mode
       puzzleSelected:false,
+      puzzleNumbers: PUZZLE_NUMBERS,
       puzzleMovesRemaining:0,
       puzzleMoves:0,
+      puzzleMovesInput:'',
+      puzzleCode:'',
       currentPuzzle:0,
       host:false,
       join:false,
       timer:false,
-      tutorial:false, 
-      tutorial2:false,
-      tutorial3:false,   
+      timerEnabled:false,
+      tutorialStep: 0,
       userPuzzle: false,
 
-      board: [["","","","","","","","",""],//Variable to initalize an empty board
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""]],
+      board: createBoard(),//Variable to initalize an empty board
 
-      occupied: [[false,false,false,false,false,false,false,false,false],//displays whether each square contains a piece
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]],
-
-      impossible:[[false,false,false,false,false,false,false,false,false],//displays whether a move is possible or not
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]],
-
-      lastMove: [[false,false,false,false,false,false,false,false,false],//displays the last move
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]],
-      allowed:[true,true,true,true,true,true,true,true,true],//displays which boards moves are allowed on
-      full:[true,true,true,true,true,true,true,true,true],//
+      occupied: createFlags(),//displays whether each square contains a piece
+      impossible: createFlags(),//displays whether a move is possible or not
+      lastMove: createFlags(),//displays the last move
+      allowed: createAllowed(),//displays which boards moves are allowed on
       xturn: true,//stores whether or not it is x's turn
       canGo: true,//stores if the current user can go
       complete: false,//stores the game end state
@@ -252,8 +180,10 @@ export default {
       
 
       gameCode: null,
+      joinCode:'',
       onlineStart: false,
       countDown: 20,
+      countdownTimer: null,
 
       viewBoard: false
       }
@@ -262,48 +192,11 @@ export default {
     home(){//resets the game board and resets variables to display the home screen
       this.local=false;this.online=false;   
       this.setViewBoardFalse();this.revokeOnline();this.revokeHost();this.revokeJoin();
-      this.board= [["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""],
-              ["","","","","","","","",""]];
-
-      this.occupied= [[false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]];
-
-      this.impossible=[[false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]];
-
-      this.lastMove= [[false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]];
-      this.allowed=[true,true,true,true,true,true,true,true,true];
-      this.full=[true,true,true,true,true,true,true,true,true];
+      this.board = createBoard();
+        this.occupied = createFlags();
+        this.impossible = createFlags();
+        this.lastMove = createFlags();
+        this.allowed = createAllowed();
       this.xturn= true;
       this.canGo= true;
       this.complete= false;
@@ -320,9 +213,13 @@ export default {
       this.puzzleSelected=false;
       this.puzzleMovesRemaining=0;
       this.puzzleMoves=0;
+      this.puzzleMovesInput='';
+      this.puzzleCode='';
 
       this.timer=false;
+      this.timerEnabled=false;
       this.gameCode= null;
+      this.joinCode='';
       this.onlineStart= false;
       this.countDown= 20;
     },
@@ -358,7 +255,9 @@ export default {
       //console.log("current move: " + this.currentMove);
       this.puzzleMovesRemaining--;
       this.draw(bigIndex, index);
-      this.processPuzzle();
+      if (this.puzzleMovesRemaining === 0) {
+        this.complete = true;
+      }
     },
     onlinePlay(bigIndex, index){//checks if move is valid then sends it to the server
       if (this.occupied[bigIndex][index] || !this.allowed[bigIndex] || !this.canGo)
@@ -379,23 +278,13 @@ export default {
       }
       this.occupied[bigIndex][index]=true
       this.xturn = !this.xturn
-      let squareWon = this.calculateWin([bigIndex]);//check if this move has won a board
+      let squareWon = this.calculateWin(bigIndex);//check if this move has won a board
       this.calculateTie();
       this.calculatePossible();
       //must move to selected miniboard
-      for (let j = 0; j <= 8; j++){
-        this.allowed[j]=false;
-      }
+      this.allowed.fill(false);
       this.allowed[index]=true;
-      this.lastMove =[[false,false,false,false,false,false,false,false,false],//reset where the last move was
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]];
+      this.lastMove = createFlags();//reset where the last move was
       this.lastMove[bigIndex][index] = true;
       if (!this.spectator)
       {
@@ -435,25 +324,13 @@ export default {
           this.board[9][this.moves[this.currentMove].bigIndex] = "";
         }
         this.moves[this.currentMove] = {};//reset space in moves
-        this.lastMove =[[false,false,false,false,false,false,false,false,false],//reset where the last move was
-                  [false,false,false,false,false,false,false,false,false],
-                  [false,false,false,false,false,false,false,false,false],
-                  [false,false,false,false,false,false,false,false,false],
-                  [false,false,false,false,false,false,false,false,false],
-                  [false,false,false,false,false,false,false,false,false],
-                  [false,false,false,false,false,false,false,false,false],
-                  [false,false,false,false,false,false,false,false,false],
-                  [false,false,false,false,false,false,false,false,false]];
+        this.lastMove = createFlags();//reset where the last move was
         if (this.currentMove > 1){
-            for (let j = 0; j <= 8; j++){
-              this.allowed[j]=false;
-            }
+          this.allowed.fill(false);
           this.allowed[this.moves[this.currentMove-1].index]=true; 
         }
         else {
-          for (let j = 0; j <= 8; j++){
-              this.allowed[j]=true;
-            }
+          this.allowed = createAllowed();
         }    
         if (--this.currentMove > 0){
           this.lastMove[this.moves[this.currentMove].bigIndex][this.moves[this.currentMove].index] = true; 
@@ -469,15 +346,7 @@ export default {
           }
         }
 
-        this.impossible = [[false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false],
-                [false,false,false,false,false,false,false,false,false]];
+        this.impossible = createFlags();
         this.calculatePossible();
         //this.currentMove--;
       }
@@ -487,10 +356,10 @@ export default {
       //if reaches 20 set winner
       //send out winner emit
     countDownTimer() {//reduce the countdown variable display by one every second
-      //console.log("timer")
       this.timer = true;
+      clearTimeout(this.countdownTimer);
       if(this.countDown > 0) {
-        setTimeout(() => {
+        this.countdownTimer = setTimeout(() => {
           this.countDown -= 1
           this.countDownTimer()
         }, 1000)
@@ -521,19 +390,12 @@ export default {
       }
     }
     //console.log("allowed");
-    const WIN_CONDITIONS = [
-      [0,1,2], [3,4,5], [6,7,8], //rows
-      [0,3,6], [1,4,7], [2,5,8],//columns
-      [0,4,8], [2,4,6] //diagonals
-    ];
     for (let i = 0; i < WIN_CONDITIONS.length; i++){
-      let first = WIN_CONDITIONS[i][0];      
-      let second = WIN_CONDITIONS[i][1];
-      let third = WIN_CONDITIONS[i][2];
+      const [first, second, third] = WIN_CONDITIONS[i];
       if(this.board[bigIndex][first]==this.board[bigIndex][second] && this.board[bigIndex][first] == this.board[bigIndex][third] && this.board[bigIndex][first] != "")//if a win condition has been met
       {
         //console.log(bigIndex);
-        if (bigIndex == 9)//if there is a win on the big board
+        if (bigIndex === 9)//if there is a win on the big board
         {
           this.complete = true;
           this.winner = this.board[bigIndex][first];     
@@ -541,7 +403,7 @@ export default {
         }
         else{
           this.board[9][bigIndex] = this.board[bigIndex][first];//check if winning this board has won the game
-          this.calculateWin("9");
+          this.calculateWin(9);
           return true;          
         }
       }
@@ -555,12 +417,12 @@ export default {
     {
       return
     }
-    var possible;
-    var same =  false;
-    for (let j = 0; j <= 8; j++){
+    let possible;
+    let same = false;
+    for (let j = 0; j < BOARD_COUNT; j++){
       possible = false;
       same =  false;
-      for (let i = 0; i <= 8; i++){
+      for (let i = 0; i < BOARD_COUNT; i++){
           if (this.occupied[j][i] == false)
           {
             if (i!=j)
@@ -580,7 +442,7 @@ export default {
       }
       if (!possible)
       {
-        for (let i = 0; i <= 8; i++){
+        for (let i = 0; i < BOARD_COUNT; i++){
           if (this.occupied[i][j] == false)
           {
             this.occupied[i][j] = true;
@@ -591,8 +453,8 @@ export default {
     }
   },
   resetBoard() {//reset the board
-    for (let i = 0; i <= 8; i++){
-      for (let j = 0; j <= 8; j++){
+    for (let i = 0; i < BOARD_COUNT; i++){
+      for (let j = 0; j < BOARD_COUNT; j++){
         this.board[i][j] = "";
         this.occupied[i][j] = false;
       }
@@ -603,8 +465,8 @@ export default {
     //console.log("Board Reset")
   },
   calculateTie() {//if the board is full and there is no winner it is a tie
-    for (let i = 0; i <= 8; i++){
-      for (let j = 0; j <= 8; j++){
+    for (let i = 0; i < BOARD_COUNT; i++){
+      for (let j = 0; j < BOARD_COUNT; j++){
       if (this.board[i][j] == ""){///////////////////change to
         return
       }
@@ -624,7 +486,6 @@ export default {
   
   nextPuzzle()
   {//move to the next puzzle
-    console.log(this.currentPuzzle);
     this.homePuzzle();
     this.loadPuzzle(this.currentPuzzle+1);
   },
@@ -673,24 +534,19 @@ export default {
   },
 
   displayPuzzle(moveLog){//input array of moves into the draw function
-    console.log(moveLog.length);
-    console.log(moveLog[1][1]);
-    for (let i = 0; i <= moveLog.length-1; i++){
-        console.log("adding move");
-        this.draw(moveLog[i][0],moveLog[i][1]);
-      }
+    moveLog.forEach(([bigIndex, index]) => this.draw(bigIndex, index));
   },
 
   activateCustomPuzzle(){
     this.userPuzzle = true;
   },
   customPuzzle(){//process input puzzle into an array and pass it to display
-    let data = document.getElementById("puzzleCode").value;//check this works at all
-    let puzzleMoves = parseInt(document.getElementById("puzzleMoves").value);//check this is an int
+    const data = this.puzzleCode;
+    const puzzleMoves = Number.parseInt(this.puzzleMovesInput, 10);
 
     const myArray = data.split(",").map(Number);
 
-    if (myArray.every(function(element) {return typeof element === 'number';})){
+    if (myArray.every(Number.isInteger)){
       if(Number.isInteger(puzzleMoves) && (myArray.length % 2 == 0)){
         console.log('0');
         this.puzzleMoves = puzzleMoves;
@@ -709,40 +565,27 @@ export default {
   },
 
   writeToFile(){ //output current moves to a string in the users clipboard
-    var output = [];
-    var index; var bigIndex; 
-    for (let i = 0; i < this.moves.length-1; i++)
-    {      
-      bigIndex = this.moves[i+1].bigIndex;      
-      index = this.moves[i+1].index;
-      output[i] = [[bigIndex],[index]];
-      console.log(index);
-      console.log(bigIndex);
-    }
+    const output = this.moves
+      .slice(1, this.currentMove + 1)
+      .map(({ bigIndex, index }) => `${bigIndex},${index}`)
+      .join(',');
     navigator.clipboard.writeText(output);
-
-    var tooltip = document.getElementById("myTooltip");
-    tooltip.innerHTML = "Copied"
   },
   showTutorial()
   {
-    this.tutorial = true;  
+    this.tutorialStep = 1;
   },
   showTutorial2()
   {
-    this.tutorial = false; 
-    this.tutorial2=true; 
+    this.tutorialStep = 2;
   },
   showTutorial3()
   {
-    this.tutorial2 = false; 
-    this.tutorial3 = true; 
+    this.tutorialStep = 3;
   },
   hideTutorial()
   {
-    this.tutorial = false; 
-    this.tutorial2=false;
-    this.tutorial3=false;
+    this.tutorialStep = 0;
   },
   
   setOnline(){   
@@ -765,8 +608,7 @@ export default {
     this.online=false;
   },
   emitTimer(){// tell server whether or not to include timer in game
-    socket.emit("timer", document.getElementById("Timer").checked);
-    console.log("timer value emitted: "+document.getElementById("Timer").checked)
+    socket.emit("timer", this.timerEnabled);
   },
   setOnlineNew(){// tell server user is hosting game
     this.setHost();
@@ -776,7 +618,7 @@ export default {
     //this.onlineStart = true;
   },
   setOnlineJoin(){ // send request to join game to server
-    var code = document.getElementById("code").value;
+    const code = this.joinCode;
     if (code != "")
     {
       this.canGo = false;
